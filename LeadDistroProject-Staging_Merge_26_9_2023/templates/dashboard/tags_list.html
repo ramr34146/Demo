@@ -1,0 +1,322 @@
+{% extends 'base_dashboard.html' %}
+{% load static %}
+{% block dashboard_head_title %}{% endblock dashboard_head_title %} 
+
+
+
+{% block content %}
+
+<div class="content d-flex flex-column flex-column-fluid" id="kt_content">
+    <!--begin::Toolbar-->
+    <div class="toolbar" id="kt_toolbar">
+        <!--begin::Container-->
+        <div id="kt_toolbar_container" class="container-fluid d-flex flex-stack">
+            <!--begin::Page title-->
+            <div data-kt-swapper="true" data-kt-swapper-mode="prepend" data-kt-swapper-parent="{default: '#kt_content_container', 'lg': '#kt_toolbar_container'}" class="page-title d-flex align-items-center flex-wrap me-3 mb-5 mb-lg-0">
+                <!--begin::Title-->
+                <h1 class="d-flex text-dark fw-bolder fs-3 align-items-center my-1">All Tags</h1>
+                <!--end::Title-->
+            </div>
+            <!--end::Page title-->
+            <!--begin::Actions-->
+           
+            <div class="d-flex align-items-center gap-2 gap-lg-3 ms-auto">
+                <td class="text-center pe-0">
+                    <button data-bs-toggle="modal" data-bs-target="#add_edit_tag_modal" class="btn btn-sm btn-primary mx-2 border-0 menu-link px-3 update-leads-limit-btn">Create New Tag</button>
+                </td>
+            </div>
+            <!--end::Actions-->
+        </div>
+        <!--end::Container-->
+    </div>
+    <!--end::Toolbar-->
+    <!--begin::Post-->
+    <div class="post d-flex flex-column-fluid" id="kt_post">
+        <!--begin::Container-->
+        <div id="kt_content_container" class="container-xxl">
+            <!--begin::Products-->
+            <div class="card card-flush">
+                <!--begin::Card header-->
+                <div class="card-header align-items-center py-5 gap-2 gap-md-5">
+                    <!--begin::Card title-->
+                    <div class="card-title">
+                    </div>
+                </div>
+                <!--end::Card header-->
+                <!--begin::Card body-->
+                <div class="card-body pt-0">
+                    <!--begin::Table-->
+                    <table class="table align-middle table-row-dashed fs-6 gy-5">
+                        <!--begin::Table head-->
+                        <thead>
+                            <!--begin::Table row-->
+                            <tr class="text-start text-gray-400 fw-bolder fs-7 text-uppercase gs-0">
+                                <th class="min-w-20px">Sr.</th>
+                                <th class="text-center min-w-70px">Tag Title</th>
+                                <th class="text-center min-w-100px">Color Code</th>
+                                <th class="text-center min-w-100px">Created At</th>
+                                <th class="text-center min-w-70px">Actions</th>
+                            </tr>
+                            <!--end::Table row-->
+                        </thead>
+                        <!--end::Table head-->
+                        <!--begin::Table body-->
+                        <tbody class="fw-bold text-gray-600">
+                            <!--begin::Table row-->
+                            {% for project in projects %}
+                                <tr>
+                                    <td>
+                                        {{forloop.counter0|add:page_obj.start_index}}
+                                    </td>
+                                    <td class="text-center pe-0">
+                                        <span class="fw-bolder text-white ms-3">{{project.tag_name}}</span>
+                                    </td>
+                                    <td class="text-center pe-0">
+                                        <div style="display: inline-block; background-color: {{ project.color_code }}; width: 20px; height: 20px; border-radius: 30%;"></div>
+                                        <span class="fw-bolder text-white ms-3">{{project.color_code}}</span>
+                                    </td>
+                                    <td class="text-center pe-0">
+                                        <span class="fw-bolder text-dark">{{project.created|date:'Y-m-d H:i'}}</span>
+                                    </td>
+                                    <!--begin::Action=-->
+                                    <td class="text-center">
+                                        <a href="#" class="btn btn-sm btn-light btn-active-light-primary" data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end">Actions
+                                        <!--begin::Svg Icon | path: icons/duotune/arrows/arr072.svg-->
+                                        <span class="svg-icon svg-icon-5 m-0">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                                <path d="M11.4343 12.7344L7.25 8.55005C6.83579 8.13583 6.16421 8.13584 5.75 8.55005C5.33579 8.96426 5.33579 9.63583 5.75 10.05L11.2929 15.5929C11.6834 15.9835 12.3166 15.9835 12.7071 15.5929L18.25 10.05C18.6642 9.63584 18.6642 8.96426 18.25 8.55005C17.8358 8.13584 17.1642 8.13584 16.75 8.55005L12.5657 12.7344C12.2533 13.0468 11.7467 13.0468 11.4343 12.7344Z" fill="currentColor" />
+                                            </svg>
+                                        </span>
+                                        <!--end::Svg Icon--></a>
+                                        <!--begin::Menu-->
+                                        <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-800 menu-state-bg-light-primary fw-bold fs-7 w-200px py-4" data-kt-menu="true">
+                                            <!--begin::Menu item-->
+                                            <div class="menu-item px-3">
+                                                <button data-bs-toggle="modal" data-bs-target="#update_tag_modal_{{project.id}}" class="bg-transparent border-0 menu-link px-3" >Update</button>
+                                            </div>
+                                            <!--begin::Menu item-->
+                                            <div class="menu-item px-3">
+                                                <button data-bs-toggle="modal" data-bs-target="#delete_tag_modal_{{project.id}}" class="bg-transparent border-0 menu-link px-3" >Delete</button>
+                                            </div>
+                                            <!--end::Menu item-->
+                                            <!--begin::Menu item-->
+                                             <!-- <div class="menu-item px-3">
+                                                <form method="POST" action="{% url 'auth:disable_enable_team_member' %}" onSubmit="return confirm('Are you sure you wish to enable/disable the member?');">
+                                                    {% csrf_token %}
+                                                    <input type="hidden" name="team_member_id" required class="form-control" value="{{team_member.team_id}}">
+                                                    <button type="submit" class="bg-transparent border-0 menu-link px-3" >
+                                                        {% if team_member.campaign_data.is_temporary_disabled %}
+                                                            Enable Member
+                                                        {% else %}
+                                                            Disable(Pause) Member
+                                                        {% endif %}
+                                                    </button>
+                                                </form>
+                                            </div> -->
+                                            <!--end::Menu item-->
+
+                                        </div>
+                                        <!--end::Menu-->
+                                    </td>
+                                    <!--end::Action=-->
+                                </tr>
+                                <!--end::Table row-->
+
+                            {% empty %}
+                                <tr>
+                                        <td>
+                                            No Tags Found!
+                                    </td>
+                                </tr>
+                            {% endfor %}
+
+
+                        </tbody>
+                        <!--end::Table body-->
+                    </table>
+                    <!--end::Table-->
+                    <br />
+                    {% if is_paginated %}
+                    <ul class="pagination my-5">
+                        {% if page_obj.has_previous %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page=1" tabindex="-1">First</a>
+                            </li>
+                            <li class="page-item previous">
+                                <a class="page-link" href="?page={{ page_obj.previous_page_number }}" tabindex="-1"><i class="previous"></i></a>
+                            </li>
+                        {% endif %}
+
+                        {% for num in page_obj.paginator.page_range %}
+                            {% if page_obj.number == num %}
+                            <li class="page-item active d-none d-sm-block" aria-current="page">
+                                <span class="page-link">
+                                {{ num }}
+                                <span class="visually-hidden">(current)</span>
+                                </span>
+                            </li>
+
+                            {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                            <li class="page-item d-none d-sm-block">
+                                <a href="?page={{ num }}" class="page-link">{{num}}</a>
+                            </li>
+
+                            {% endif %}
+                      {% endfor %}
+
+                      {% if page_obj.has_next %}
+                        <li class="page-item next">
+                          <a href="?page={{ page_obj.next_page_number }}" class="page-link" aria-label="Next">
+                            <i class="next"></i>
+                          </a>
+                        </li>
+
+                        <li class="page-item"> <a class="page-link" href="?page={{ page_obj.paginator.num_pages}}">Last</a></li>
+
+                      {% endif %}
+
+                    </ul>
+                    {% endif %}
+                </div>
+                <!--end::Card body-->
+            </div>
+            <!--end::Products-->
+        </div>
+        <!--end::Container-->
+    </div>
+    <!--end::Post-->
+</div>
+
+<!-- Add Tag Modal pop up -->
+<div class="modal fade" id="add_edit_tag_modal" tabindex="-1" aria-modal="true" role="dialog">
+	<div class="modal-dialog modal-dialog-centered">
+		<div class="modal-content">
+            <form id="" class="my-3" method="POST" action="{% url 'auth:create_tags' %}">
+                {% csrf_token %}
+                <div class="modal-header">
+                    <h3 class="modal-title">Create Tag</h3>
+                    <div class="btn btn-icon btn-sm btn-active-light-primary ms-2" data-bs-dismiss="modal" aria-label="Close">
+                        <span class="svg-icon svg-icon-1"></span>
+                    </div>
+                    <!--end::Close-->
+                </div>
+                <div class="modal-body">
+                    <label class="my-3">Title</label>
+                        <input type="text" name="tag_title" min="-1" required class="form-control">
+                    <label class="my-3">Tag Color</label>
+                        <input type="color" id="tag_color_picker" name="colorcode" required class="form-control">
+                    <label class="my-3">Tag Color Preview</label>
+                    <div id="" class="tag-color-preview">
+                        <input class="form-control" id="tag_color_input" type="text" readonly>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                </div>
+            </form>
+		</div>
+	</div>
+</div>
+
+{% for project in projects %}
+<!-- update Tag Modal pop up -->
+<div class="modal fade" id="update_tag_modal_{{project.id}}" tabindex="-1" aria-modal="true" role="dialog">
+	<div class="modal-dialog modal-dialog-centered">
+		<div class="modal-content">
+            <form id="" class="my-3" method="POST" action="{% url 'auth:update_tags' %}">
+                {% csrf_token %}
+                <div class="modal-header">
+                    <h3 class="modal-title">Update Tag</h3>
+                    <div class="btn btn-icon btn-sm btn-active-light-primary ms-2" data-bs-dismiss="modal" aria-label="Close">
+                        <span class="svg-icon svg-icon-1"></span>
+                    </div>
+                    <!--end::Close-->
+                </div>
+                <div class="modal-body">
+                    <label class="my-3">Title</label>
+                        <input type="text" name="tag_title" min="-1" value="{{project.tag_name}}" required class="form-control">
+                        <input type="hidden" name="tag_id" class="form-control" value="{{project.id}}">
+                    <label class="my-3">Tag Color</label>
+                        <input type="color" id="update_tag_color_picker{{project.id}}" name="colorcode" value="{{project.color_code}}" required class="form-control update_tag_color_picker">
+                    <!-- Display color code -->
+                    <label class="my-3">Tag Color Code</label>
+                        <input type="text" id="update_tag_color_input{{project.id}}" name="tag_color_code" value="{{project.color_code}}" readonly class="form-control">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                </div>
+            </form>
+		</div>
+	</div>
+</div>
+{% endfor %}
+
+{% for project in projects %}
+<!-- delete Tag Modal pop up -->
+<div class="modal fade" id="delete_tag_modal_{{project.id}}" tabindex="-1" aria-modal="true" role="dialog">
+	<div class="modal-dialog modal-dialog-centered">
+		<div class="modal-content">
+            <form id="" class="my-3" method="POST" action="{% url 'auth:delete_tags' %}">
+                <div class="modal-header">
+                    <h3 class="modal-title">Delete Tag</h3>
+                    <div class="btn btn-icon btn-sm btn-active-light-primary ms-2" data-bs-dismiss="modal" aria-label="Close">
+                        <span class="svg-icon svg-icon-1"></span>
+                    </div>
+                    <!--end::Close-->
+                </div>
+                <div class="modal-body">
+                    <label class="my-3">Title</label>
+                        {% csrf_token %}
+                        <label class="required fs-6 fw-bold mb-2">Are you sure want to delete this Tag {{project.tag_name}}</label>
+                        <input type="hidden" name="tag_id" class="form-control" value="{{project.id}}">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Delete</button>
+                </div>
+            </form>
+		</div>
+	</div>
+</div>
+{% endfor %}
+<!-- JavaScript to handle color picker interaction -->
+<script>
+    const colorPicker = document.getElementById('tag_color_picker');
+    const colorPreviewInput = document.getElementById('tag_color_input');
+
+    // Initialize color picker value and background color
+    colorPicker.value = '{{ project.tag_color }}';
+    colorPreviewInput.value = colorPicker.value;
+
+    // Add event listener to update color preview and input value when color is changed
+    colorPicker.addEventListener('input', (event) => {
+        const selectedColor = event.target.value;
+        colorPreviewInput.value = selectedColor;
+    });
+</script>
+<!-- JavaScript to update color picker value when update modal is shown -->
+{% for project in projects %}
+<script>
+    const UpdateColorPicker{{project.id}} = document.getElementById('update_tag_color_picker{{project.id}}');
+    const updateColorPreviewInput{{project.id}} = document.getElementById('update_tag_color_input{{project.id}}');
+
+    // Initialize color picker value and background color
+    UpdateColorPicker{{project.id}}.value = '{{ project.color_code }}';
+    updateColorPreviewInput{{project.id}}.value = UpdateColorPicker{{project.id}}.value;
+
+    // Add event listener to update color preview and input value when color is changed
+    UpdateColorPicker{{project.id}}.addEventListener('input', (event) => {
+        const updateSelectedColor = event.target.value;
+        updateColorPreviewInput{{project.id}}.value = updateSelectedColor;
+    });
+</script>
+{% endfor %}
+<style>
+    #tag_color_picker, .update_tag_color_picker{
+        height: 50px !important;
+    }
+</style>
+
+{% endblock content %}

@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+{% load static %}
+{% load i18n %}
+{% load account socialaccount %}
+{% load crispy_forms_tags %}
+
+{% block head_title %}{% trans "Sign In" %}{% endblock %}
+
+{% block content %}
+<div class="d-flex flex-column flex-root">
+  <!--begin::Authentication - Sign-up -->
+  <div class="d-flex flex-column flex-column-fluid bgi-position-y-bottom position-x-center bgi-no-repeat bgi-size-contain bgi-attachment-fixed" style="background-image: url({% static 'media/illustrations/sketchy-1/14-dark.png' %}">
+    <!--begin::Content-->
+    <div class="d-flex flex-center flex-column flex-column-fluid p-10 pb-lg-20">
+      <!--begin::Logo-->
+      <a href="{% url 'core:home' %}" class="mb-12">
+        <img alt="Logo" src="{% static 'img/logo.png' %}" class="h-40px" />
+      </a>
+      <!--end::Logo-->
+      <!--begin::Wrapper-->
+      <div class="w-lg-600px bg-body rounded shadow-sm p-10 p-lg-15 mx-auto">
+        <!--begin::Form-->
+        <form class="form w-100" novalidate="novalidate" id="kt_sign_up_form" method="post" action="{% url 'account_signup' %}">
+          {% csrf_token %}
+          <div class="mb-10 text-center">
+            <h1 class="text-dark mb-3">Create an Account</h1>
+            <div class="text-gray-400 fw-bold fs-4">Already have an account?
+            <a href="{% url 'account_login' %}" class="link-primary fw-bolder">Sign in here</a></div>
+          </div>
+          <div class="fv-row mb-10">
+            {{ form | crispy }}
+            {% if redirect_field_value %}
+              <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />
+            {% endif %}
+          </div>
+          <div class="text-center">
+            <button type="submit" id="kt_sign_up_submit" class="btn btn-lg btn-primary">
+              <span class="indicator-label">Sign Up</span>
+              <span class="indicator-progress">Please wait...
+              <span class="spinner-border spinner-border-sm align-middle ms-2"></span></span>
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+    <div class="d-flex flex-center flex-column-auto p-10">
+      {% include 'account/snippets/footer_extra.html' %}
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+
+
+{% block extrabody %}
+
+<script type="text/javascript">
+
+submitButton = document.querySelector('#kt_sign_up_submit');
+submitButton.addEventListener('click', function () {
+  submitButton.setAttribute('data-kt-indicator', 'on');
+});
+
+</script> 
+
+{% endblock extrabody %}
+
+
+
+{% comment %} 
+{% extends "account/base.html" %}
+
+{% load i18n %}
+
+{% block head_title %}{% trans "Signup" %}{% endblock %}
+
+{% block content %}
+<h1>{% trans "Sign Up" %}</h1>
+
+<p>{% blocktrans %}Already have an account? Then please <a href="{{ login_url }}">sign in</a>.{% endblocktrans %}</p>
+
+<form class="signup" id="signup_form" method="post" action="{% url 'account_signup' %}">
+  {% csrf_token %}
+  {{ form.as_p }}
+  {% if redirect_field_value %}
+  <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />
+  {% endif %}
+  <button type="submit">{% trans "Sign Up" %} &raquo;</button>
+</form>
+
+{% endblock %} {% endcomment %}

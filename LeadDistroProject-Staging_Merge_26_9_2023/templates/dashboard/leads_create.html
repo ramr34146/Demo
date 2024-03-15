@@ -1,0 +1,267 @@
+{% extends 'base_dashboard.html' %}
+{% load static %}
+
+
+{% block dashboard_head_title %}{% endblock dashboard_head_title %} 
+
+{% block extra_css_start %}
+<link href="{% static 'plugins/custom/datatables/datatables.bundle.css'%}" rel="stylesheet" type="text/css" />
+{% endblock extra_css_start %}
+
+{% block extra_css %}
+
+{% endblock extra_css %}
+
+{% block content %}
+
+<div class="content d-flex flex-column flex-column-fluid" id="kt_content">
+	<!--begin::Toolbar-->
+	<div class="toolbar" id="kt_toolbar">
+		<!--begin::Container-->
+		<div id="kt_toolbar_container" class="container-fluid d-flex flex-stack">
+			<!--begin::Page title-->
+			<div data-kt-swapper="true" data-kt-swapper-mode="prepend" data-kt-swapper-parent="{default: '#kt_content_container', 'lg': '#kt_toolbar_container'}" class="page-title d-flex align-items-center flex-wrap me-3 mb-5 mb-lg-0">
+				<!--begin::Title-->
+				<h1 class="d-flex text-dark fw-bolder fs-3 align-items-center my-1">Create a New Lead Project</h1>
+				<!--end::Title-->
+			</div>
+			<!--end::Page title-->
+			<!--begin::Actions-->
+			<div class="d-flex align-items-center gap-2 gap-lg-3">
+				<!--begin::Primary button-->
+				<a href="{% url 'auth:leads_list' %}" class="btn btn-sm btn-primary" >View All Projects</a>
+
+				<!--end::Primary button-->
+			</div>
+			<!--end::Actions-->
+		</div>
+		<!--end::Container-->
+	</div>
+	<!--end::Toolbar-->
+
+	<div class="row col-10 offset-1 mt-2">
+		<div class="alert alert-dismissible bg-light-dark d-flex flex-column flex-sm-row w-100 p-3 mb-5">
+			<span class="svg-icon svg-icon-2hx svg-icon-dark me-4 mb-5 mb-sm-0">
+				<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+					<path opacity="0.3" d="M12 22C13.6569 22 15 20.6569 15 19C15 17.3431 13.6569 16 12 16C10.3431 16 9 17.3431 9 19C9 20.6569 10.3431 22 12 22Z" fill="currentColor"></path>
+					<path d="M19 15V18C19 18.6 18.6 19 18 19H6C5.4 19 5 18.6 5 18V15C6.1 15 7 14.1 7 13V10C7 7.6 8.7 5.6 11 5.1V3C11 2.4 11.4 2 12 2C12.6 2 13 2.4 13 3V5.1C15.3 5.6 17 7.6 17 10V13C17 14.1 17.9 15 19 15ZM11 10C11 9.4 11.4 9 12 9C12.6 9 13 8.6 13 8C13 7.4 12.6 7 12 7C10.3 7 9 8.3 9 10C9 10.6 9.4 11 10 11C10.6 11 11 10.6 11 10Z" fill="currentColor"></path>
+				</svg>
+			</span>
+			<!--begin::Content-->
+			<div class="d-flex flex-column pe-0 pe-sm-10 py-3">
+				<h3>LandlineRemover APIKey:
+					<span hx-get="{% url 'auth:htmx_llr_apikey' %}" hx-trigger="load" hx-swap="innerHTML" >
+						Checking......
+					</span>
+				</h3>
+			</div>
+			<!--end::Content-->
+			
+		</div>
+	</div>
+	
+	<div class="row col-10 offset-1 mb-2">
+		<div class="alert alert-dismissible bg-light-dark d-flex flex-column flex-sm-row w-100 p-3 mb-5">
+			<span class="svg-icon svg-icon-2hx svg-icon-dark me-4 mb-5 mb-sm-0">
+				<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+					<path opacity="0.3" d="M12 22C13.6569 22 15 20.6569 15 19C15 17.3431 13.6569 16 12 16C10.3431 16 9 17.3431 9 19C9 20.6569 10.3431 22 12 22Z" fill="currentColor"></path>
+					<path d="M19 15V18C19 18.6 18.6 19 18 19H6C5.4 19 5 18.6 5 18V15C6.1 15 7 14.1 7 13V10C7 7.6 8.7 5.6 11 5.1V3C11 2.4 11.4 2 12 2C12.6 2 13 2.4 13 3V5.1C15.3 5.6 17 7.6 17 10V13C17 14.1 17.9 15 19 15ZM11 10C11 9.4 11.4 9 12 9C12.6 9 13 8.6 13 8C13 7.4 12.6 7 12 7C10.3 7 9 8.3 9 10C9 10.6 9.4 11 10 11C10.6 11 11 10.6 11 10Z" fill="currentColor"></path>
+				</svg>
+			</span>
+			<!--begin::Content-->
+			<div class="d-flex flex-column pe-0 pe-sm-10 py-3">
+				<h3>
+					Total Members : <span class="text-danger">{{total_members}} </span> | 
+					Member(s) on Vacation Mode: <span class="text-danger"> {{vacation_mode}} </span> | 
+					Disable(Pause) Member(s): <span class="text-danger">{{disable_members}} </span> | 
+					Active Members : <span class="text-success">{{active_members}} </span>
+				</h3>
+			</div>
+			<!--end::Content-->
+		</div>
+	</div>
+
+
+	<!--begin::Post-->
+	<div class="post d-flex flex-column-fluid" id="kt_post">
+		<!--begin::Container-->
+		<div id="kt_content_container" class="container-xxl">
+			<!--begin::Form-->
+			<form  id="kt_ecommerce_add_product_form" class="form d-flex flex-column flex-lg-row fv-plugins-bootstrap5 fv-plugins-framework" method="POST" action="." enctype="multipart/form-data">
+				{% csrf_token %}        
+				<!--begin::Main column-->
+				<div class="d-flex flex-column flex-row-fluid gap-7 gap-lg-10">
+					<!--begin::Tab content-->
+					<div class="tab-content">
+						<!--begin::Tab pane-->
+						<div class="tab-pane fade show active" id="kt_ecommerce_add_product_general" role="tab-panel">
+							<div class="d-flex flex-column gap-7 gap-lg-10">
+								<!--begin::General options-->
+								<div class="card card-flush py-4">
+									<!--begin::Card body-->
+									<div class="card-body pt-0">
+										<!--begin::Input group-->
+										<div class="mb-10 fv-row fv-plugins-icon-container mt-5">
+											<label class="required form-label" style="font-size: 1.4rem;">Project Title</label>
+											<input type="text" name="project_name" required class="form-control mb-2" placeholder="Enter Project Title">
+                                        </div>
+										<!--end::Input group-->
+
+                                        
+                                        <!--begin::Input group-->
+										<div class="mb-10 fv-row fv-plugins-icon-container">
+											<label class=" form-label" style="font-size: 1.3rem;">Project Description (Optional)</label>
+                                            <textarea class="form-control" placeholder="Enter Your Project description ........" rows="3" name="project_description"></textarea>
+                                        </div>
+										<!--end::Input group-->
+
+
+										<div class="mb-10 fv-row ">
+                                            <label class="required form-label pb-2" style="font-size: 1.4rem;">Upload Leads File</label>
+											<div class="rounded border-2 border-dashed border-primary-hover">
+                                                <div class="d-flex justify-content-center px-5 py-5">
+                                                    <input id="file_upload" class="py-5" required name="csv_file_upload" accept=".csv" type="file" >
+                                                    {% comment %} <div class="text-center">
+                                                        <div class="text-2xl text-muted"><i class="bi bi-upload"></i></div>
+                                                        <div class="d-flex text-sm mt-3">
+                                                            <p class="font-semibold">Upload a file or drag and drop</p>
+                                                        </div>
+                                                        <p class="text-xs text-gray-500">Only Allow CSV</p>
+                                                    </div> {% endcomment %}
+                                                </div>
+                                            </div> 
+                                        </div>
+										
+										{% comment %} <!--begin::Input group-->
+										<div class="mb-10 fv-row fv-plugins-icon-container mt-5">
+											<div class="form-check form-check-custom form-check-primary form-check-solid">
+												<input class="form-check-input" type="checkbox" name="dnc_check"  />
+												<label class="form-check-label h5 mb-0">
+													Checking this box will block those found on <a href="https://landlineremover.com/" target="_blank" class="text-warning">LandlineRemover.com</a> to be DNC from being given to your members.
+												</label>
+											</div>
+										</div>
+										<!--end::Input group--> {% endcomment %}
+
+										<div class="mb-10 fv-row fv-plugins-icon-container mt-5">
+											<label class="form-label" style="font-size: 1.4rem;">Tags </label>
+											<br>
+											<label class="form-label" style="font-size: 1rem;padding-bottom:4px">Note:To add a tag thats not removable include _TDNR after your tag you want applied to lead of team member </label>
+
+											<input type="text" name="tag_name" class="form-control mb-2" placeholder="Enter Tags">
+                                        </div>
+
+
+										<!--begin::Input group-->
+										<div class="mb-10 fv-row fv-plugins-icon-container mt-5">
+											<div class="form-check form-switch form-check-custom form-check-warning form-check-solid">
+												<input class="form-check-input h-30px w-60px" type="checkbox" name="do_not_distribute" />
+												<label class="form-check-label h4 mb-0 px-3">
+													Check this box to run all checks but DO NOT distribute leads to members
+												</label>
+											</div>
+										</div>
+										<!--end::Input group-->
+										
+										<!--begin::Example-->
+											<div class="separator separator-content my-15 h3">Landline&nbsp;Remover</div>
+										<!--end::Example-->
+
+
+										<!--begin::Input group-->
+										<div class="mb-10 fv-row fv-plugins-icon-container mt-5">
+											<div class="form-check form-switch form-check-custom form-check-primary form-check-solid">
+												<input class="form-check-input h-30px w-60px" type="checkbox" name="allow_llr_site" id="allow_llr_site" checked="checked"/>
+												<label class="form-check-label h4 mb-0 px-3">
+													Checking this box will allow to check LineType and DncType data from LLR (if apikey is attached)
+												</label>
+											</div>
+										</div>
+										<!--end::Input group-->
+										
+										<!--begin::Input group-->
+										<div class="mb-10 fv-row fv-plugins-icon-container mt-5">
+											<div class="form-check form-switch form-check-custom form-check-success form-check-solid">
+												<input class="form-check-input h-30px w-60px" type="checkbox" name="dnc_check"  id="dnc_check"/>
+												<label class="form-check-label h4 mb-0 px-3" >
+													Checking this box will block those found on <a href="https://landlineremover.com/" target="_blank" class="text-success">LandlineRemover.com</a> to be DNC from being given to your members.
+												</label>
+											</div>
+										</div>
+										<!--end::Input group-->
+
+
+									</div>
+									<!--end::Card header-->
+									
+								</div>
+								<!--end::General options-->
+
+							</div>
+						</div>
+						<!--end::Tab pane-->
+					
+					</div>
+					<!--end::Tab content-->
+					<div class="d-flex justify-content-center">
+						<!--end::Button-->
+						<!--begin::Button-->
+						<button type="submit" id="submit_btn_process" class="btn btn-primary my-5 text-center"> 
+							<span class="indicator-label">Create Project</span> 
+							<span class="indicator-progress">Please wait... 
+							<span class="spinner-border spinner-border-sm align-middle ms-2"></span></span>
+						</button>
+						<!--end::Button-->
+					</div>
+				</div>
+				<!--end::Main column-->
+				<div></div>
+			</form>
+			<!--end::Form-->
+		</div>
+		<!--end::Container-->
+	</div>
+	<!--end::Post-->
+</div>
+{% endblock content %}
+
+{% block extra_js %}
+
+<script type="text/javascript">
+
+submitButton = document.querySelector('#submit_btn_process');
+submitButton.addEventListener('click', function () {
+	allow_ind = 'true'
+	$('input:required').each(function() {
+		if ($(this).val() === '')
+			allow_ind = 'false'
+		});
+	
+	if (allow_ind==="true"){
+		submitButton.setAttribute('data-kt-indicator', 'on');
+	}
+});
+
+</script> 
+		
+<script>
+	if ( window.history.replaceState ) {
+	  window.history.replaceState( null, null, window.location.href );
+	}
+  </script>
+
+<script>
+	llr_cb = document.getElementById("allow_llr_site");
+	dnc_cb = document.getElementById("dnc_check");
+	llr_cb.addEventListener('change', function(e) {
+		if (llr_cb.checked == false) {
+			dnc_cb.checked = false;
+			dnc_cb.disabled = true;
+		}
+		else {
+			dnc_cb.disabled = false;
+		}
+	});
+</script>
+
+{% endblock extra_js %}

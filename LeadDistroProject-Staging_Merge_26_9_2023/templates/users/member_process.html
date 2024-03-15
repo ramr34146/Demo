@@ -1,0 +1,156 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+{% load static %}
+{% load i18n %}
+
+
+{% block content %}
+<div class="d-flex flex-column flex-root">
+  <div class="d-flex flex-column flex-column-fluid bgi-position-y-bottom position-x-center bgi-no-repeat bgi-size-contain bgi-attachment-fixed" style="background-image: url({% static 'media/illustrations/sketchy-1/14-dark.png' %}">
+    <div class="d-flex flex-center flex-column flex-column-fluid p-10 pb-lg-20">
+      <a href="{% url 'core:home' %}" class="mb-12">
+        <img alt="Logo" src="{% static 'img/logo.png' %}" class="h-40px" />
+      </a>
+      <div class="w-lg-500px bg-body rounded shadow-sm p-10 p-lg-15 mx-auto">
+
+        <form class="form w-100"  method="POST" action="{% url 'users:member_process' %}"> 
+          {% csrf_token %}
+          <input type="hidden" name="superuser_id" value="{{superuser_id}}">
+          <input type="hidden" name="member_id" value="{{member_id}}">
+          <input type="hidden" name="member_apitoken" value="{{member_apitoken}}">
+          {% if is_member_new %}
+            <div class="text-center mb-10">
+              <h1 class="text-dark mb-3">Complete Account Details</h1>
+            </div>
+            <div class="fv-row mb-10">
+                <!--begin::Input group-->
+                <div class="mb-10 fv-row fv-plugins-icon-container">
+                  <label class="required form-label">Member Full Name</label>
+                  <input type="text" name="full_name" required class="form-control mb-2" placeholder="Enter Member's Full Name" value={{full_name}}>
+                </div>
+                <!--end::Input group-->
+                <div class="fv-row mb-10 fv-plugins-icon-container" data-kt-password-meter="true">
+									<!--begin::Wrapper-->
+									<div class="mb-1">
+                    <label class="required form-label">Account Password</label>
+										<!--begin::Input wrapper-->
+										<div class="position-relative mb-3">
+											<input class="form-control form-control-lg form-control-solid" required type="password" name="user_password" placeholder="Enter Your Password" autocomplete="off" data-kt-translate="sign-up-input-password">
+											<span class="btn btn-sm btn-icon position-absolute translate-middle top-50 end-0 me-n2" data-kt-password-meter-control="visibility">
+												<i class="bi bi-eye-slash fs-2"></i>
+												<i class="bi bi-eye fs-2 d-none"></i>
+											</span>
+										</div>
+										<!--end::Input wrapper-->
+										<!--begin::Meter-->
+										<div class="d-flex align-items-center mb-3" data-kt-password-meter-control="highlight">
+											<div class="flex-grow-1 bg-secondary bg-active-warning rounded h-5px me-2"></div>
+											<div class="flex-grow-1 bg-secondary bg-active-primary rounded h-5px me-2"></div>
+											<div class="flex-grow-1 bg-secondary bg-active-success rounded h-5px me-2"></div>
+											<div class="flex-grow-1 bg-secondary bg-active-success rounded h-5px"></div>
+										</div>
+										<!--end::Meter-->
+									</div>
+									<!--end::Wrapper-->
+									<!--begin::Hint-->
+									<div class="text-muted" data-kt-translate="sign-up-hint">Set Password with 8 or more characters with a mix of letters, numbers &amp; symbols.</div>
+									<!--end::Hint-->
+								<div class="fv-plugins-message-container invalid-feedback"></div></div>
+                
+                <!--begin::Input group-->
+                <div class="mb-10 fv-row fv-plugins-icon-container ">
+                  <label class="form-label">Leads Assign Limit<br>
+                    Your max lead limit is  {{lead_limit}}  </label>
+                  <input type="number" name="update_leads_limit" min="-1" required class="form-control" value="0">
+                  <p class="my-2">-1 for unlimited</p>
+                </div>
+                <!--end::Input group-->
+
+                {% comment %} 
+                  <!--begin::Input group-->
+                  <div class="mb-10 fv-row fv-plugins-icon-container ">
+                    <label class="form-label">LandlineRemover APIKey</label>
+                    <input type="text" name="llr_apikey" class="form-control mb-2" placeholder="Enter APIKey or Leave it empty" > 
+                  </div>
+                  <!--end::Input group--> 
+                {% endcomment %}
+
+            </div>
+          {% endif %}
+          
+          <div class="text-center mb-10">
+            <h2 class="text-dark mb-3">Choose Campaign</h2>
+          </div>
+          <div class="fv-row mb-10">
+              <!--begin::Input group-->
+              <div class="fv-row w-100 flex-md-root fv-plugins-icon-container">
+                  <select class="form-select mb-2 " id="td_campaign" name="td_campaign" required="required" data-control="select2" data-hide-search="true" data-placeholder="Select an option"  tabindex="-1" aria-hidden="true">
+                      {% for op in campaign_data %}
+                          <option value="{{op.id}}__{{op.title}}">{{op.title}}</option>
+                      {% endfor %}
+                  </select>
+              </div>
+              <!--end::Input group-->
+          </div>
+          <button type="submit" id="submit_btn_process" class="btn btn-lg btn-primary w-100 mb-5" >
+            <span class="indicator-label">Process & Accept the Invitation</span>
+            <span class="indicator-progress">Please wait...
+            <span class="spinner-border spinner-border-sm align-middle ms-2"></span></span>
+          </button>
+         
+        </form>
+
+      </div>
+    </div>
+
+    <!--begin::Footer-->
+    <div class="d-flex flex-center flex-column-auto p-10">
+      <!--begin::Links-->
+      {% include 'account/snippets/footer_extra.html' %}
+    </div>
+    <!--end::Footer-->
+  </div>
+</div>
+{% endblock %}
+
+
+
+
+
+{% block extra_js %}
+
+<script type="text/javascript">
+
+  is_show_prog = "true"
+  submitButton = document.querySelector('#submit_btn_process');
+  submitButton.addEventListener('click', function () {
+    $('input:required').each(function() {
+      if ($(this).val() === '')
+        is_show_prog = "false"
+      });
+    if (is_show_prog === "true"){
+      submitButton.setAttribute('data-kt-indicator', 'on');
+    }
+  });
+
+
+  </script> 
+
+{% endblock extra_js %}
+
+{% comment %} var e = document.getElementById("td_campaign");
+var evalue = e.options[e.selectedIndex].value;
+  if (evalue === ''){
+    is_show_prog = "false"
+  }; {% endcomment %}
+{% comment %} 
+{% block extrabody %}
+
+<script type="text/javascript">
+  submitButton = document.querySelector('#kt_ecommerce_add_product_submit');
+  submitButton.addEventListener('click', function () {
+  submitButton.setAttribute('data-kt-indicator', 'on');
+});
+</script> 
+
+{% endblock extrabody %} {% endcomment %}

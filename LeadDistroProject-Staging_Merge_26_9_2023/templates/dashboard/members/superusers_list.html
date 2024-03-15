@@ -1,0 +1,235 @@
+{% extends 'base_dashboard.html' %}
+{% load static %}
+{% block dashboard_head_title %}{% endblock dashboard_head_title %} 
+
+{% block extra_css_start %}
+<link href="{% static 'plugins/custom/datatables/datatables.bundle.css'%}" rel="stylesheet" type="text/css" />
+{% endblock extra_css_start %}
+
+{% block content %}
+
+<div class="content d-flex flex-column flex-column-fluid" id="kt_content">
+    <!--begin::Toolbar-->
+    <div class="toolbar" id="kt_toolbar">
+        <!--begin::Container-->
+        <div id="kt_toolbar_container" class="container-fluid d-flex flex-stack">
+            <!--begin::Page title-->
+            <div data-kt-swapper="true" data-kt-swapper-mode="prepend" data-kt-swapper-parent="{default: '#kt_content_container', 'lg': '#kt_toolbar_container'}" class="page-title d-flex align-items-center flex-wrap me-3 mb-5 mb-lg-0">
+                <!--begin::Title-->
+                <h1 class="d-flex text-dark fw-bolder fs-3 align-items-center my-1">All Super Users</h1>
+                <!--end::Title-->
+            </div>
+            <!--end::Page title-->
+        </div>
+        <!--end::Container-->
+    </div>
+    <!--end::Toolbar-->
+    <!--begin::Post-->
+    <div class="post d-flex flex-column-fluid" id="kt_post">
+        <!--begin::Container-->
+        <div id="kt_content_container" class="container-xxl">
+            <!--begin::Products-->
+            <div class="card card-flush">
+                <!--begin::Card body-->
+                <div class="card-body pt-0">
+                    <!--begin::Table-->
+                    <table class="table align-middle table-row-dashed fs-6 gy-5" id="kt_ecommerce_products_table">
+                        <!--begin::Table head-->
+                        <thead>
+                            <!--begin::Table row-->
+                            <tr class="text-start text-gray-700 fw-bolder fs-7 text-uppercase gs-0">
+                                <th class="min-w-20px">Sr.</th>
+                                <th class="text-center min-w-70px">Email</th>
+                                <th class="text-center min-w-70px">Disable(Pause)</th>
+                                <th class="text-center min-w-70px">Textdrip APIKey</th>
+                                <th class="text-center min-w-70px">Compaign</th>
+                                <th class="text-center min-w-70px">Total Assign Leads</th>
+                                <th class="text-center min-w-70px">Leads Assign Limit (Remaining)</th>
+                                <th class="text-center min-w-70px">Timestamp</th>
+                                <th class="text-center min-w-70px">Actions</th>
+                            </tr>
+                            <!--end::Table row-->
+                        </thead>
+                        <!--end::Table head-->
+                        <!--begin::Table body-->
+                        <tbody class="fw-bold text-gray-600">
+                            <!--begin::Table row-->
+                            {% for object in objects %}
+                                <tr>
+                                    <td>
+                                        {{forloop.counter}}
+                                    </td>
+
+                                    <td class="text-center pe-0" >
+                                        <span class="fw-bolder text-warning ms-3">{{object.superuser.user.email}}</span>
+                                    </td>
+
+                                    <td class="text-center pe-0" >
+                                        {% if object.is_temporary_disabled %}
+                                            <span class="badge badge-circle badge-success"><i class="bi bi-check-lg text-white"></i></span>
+                                        {% else %}
+                                            <span class="badge badge-circle badge-danger"><i class="bi bi-x-lg text-black"></i></span>
+                                        {% endif %}
+                                    </td>
+                                   
+                                    <td class="text-center pe-0" >
+                                        <button class="bg-transparent border-0 menu-link px-3 text-white fw-bolder text-success ms-3" onclick="copyKey(this)" value="{{team_member.campaign_data.textdrip_apikey}}">
+                                            {{object.textdrip_apikey|truncatechars:9}} <span class="text-decoration-underline">copy</span> 
+                                        </button>
+                                    </td>
+
+                                    <td class="text-center pe-0">
+                                        <span class="fw-bolder text-dark">{{object.textdrip_compaign_value}}</span>
+                                    </td>
+
+                                    <td class="text-center pe-0">
+                                        <span class="fw-bolder text-dark">{{object.total_assign_leads}}</span>
+                                    </td>
+
+                                    <td class="text-center pe-0">
+                                        {% if object.assign_leads_limit == -1 %}
+                                        <span class="fw-bolder text-dark">Unlimited</span>
+                                        {% else %}
+                                        <span class="fw-bolder text-dark">{{object.assign_leads_limit}} </span>
+                                        {% endif %}
+                                    </td>
+                                 
+                                    <td class="text-center pe-0">
+                                        <span class="fw-bolder text-dark">{{object.updated}}</span>
+                                    </td>
+
+                                    <!--begin::Action=-->
+                                    <td class="text-center">
+                                        <a href="#" class="btn btn-sm btn-light btn-active-light-primary" data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end">Actions 
+                                        <!--begin::Svg Icon | path: icons/duotune/arrows/arr072.svg-->
+                                        <span class="svg-icon svg-icon-5 m-0">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                                <path d="M11.4343 12.7344L7.25 8.55005C6.83579 8.13583 6.16421 8.13584 5.75 8.55005C5.33579 8.96426 5.33579 9.63583 5.75 10.05L11.2929 15.5929C11.6834 15.9835 12.3166 15.9835 12.7071 15.5929L18.25 10.05C18.6642 9.63584 18.6642 8.96426 18.25 8.55005C17.8358 8.13584 17.1642 8.13584 16.75 8.55005L12.5657 12.7344C12.2533 13.0468 11.7467 13.0468 11.4343 12.7344Z" fill="currentColor" />
+                                            </svg>
+                                        </span>
+                                        <!--end::Svg Icon--></a>
+                                        <!--begin::Menu-->
+                                        <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-800 menu-state-bg-light-primary fw-bold fs-7 w-200px py-4" data-kt-menu="true">
+                                            {% comment %} <!--begin::Menu item-->
+                                            <div class="menu-item px-3">
+                                                <button data-bs-toggle="modal" data-bs-target="#{{object.superuser.superuser_id}}" class="bg-transparent border-0 menu-link px-3" >Update Leads Limit</button>
+                                            </div>
+                                            <!--end::Menu item--> {% endcomment %}
+                                            <!--begin::Menu item-->
+                                            <div class="menu-item px-3">
+                                                <button data-bs-toggle="modal" data-bs-target="#m_{{object.superuser.superuser_id}}" class="bg-transparent border-0 menu-link px-3" >Update Leads Limit</button>
+                                            </div>
+                                            <!--end::Menu item-->
+
+                                            <!--begin::Menu item-->
+                                            <div class="menu-item px-3">
+                                                <form action="{% url 'auth:send_email_lead_limit' %}" method="POST" class="my-3" name="">
+                                                    {% csrf_token %}
+                                                    <input type="hidden" name="superuser_id" class="form-control" value="{{object.superuser.superuser_id}}">
+                                                    <input type="hidden" name="current_limit" class="form-control" value="{{object.total_assign_leads}}">
+                                                    <button data-bs-toggle="modal" type="submit" class="bg-transparent border-0 menu-link px-3" >Request Leads Limit</button>
+                                                </form>
+                                            </div>
+                                            <!--end::Menu item-->
+
+                                             <!--begin::Menu item-->
+                                             <div class="menu-item px-3">
+                                                <form method="POST" action="{% url 'auth:disable_enable_team_member' %}" onSubmit="return confirm('Are you sure you wish to enable/disable for superuser?');">
+                                                    {% csrf_token %}  
+                                                    <input type="hidden" name="superuser_id" required class="form-control" value="{{object.superuser.superuser_id}}">
+                                                    <button type="submit" class="bg-transparent border-0 menu-link px-3" >
+                                                        {% if object.is_temporary_disabled %}
+                                                            Enable Superuser
+                                                        {% else %}
+                                                            Disable(Pause) Superuser
+                                                        {% endif %}
+                                                    </button>
+                                                </form>
+                                            </div>
+                                            <!--end::Menu item-->
+
+                                        </div>
+                                        <!--end::Menu-->
+                                    </td>
+                                    <!--end::Action=-->
+
+                                </tr>
+                                <!--end::Table row-->
+                            {% empty %}
+                                <tr>
+                                    <td>
+                                        No Record(s) Found!
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                                                            
+                        
+                        </tbody>
+                        <!--end::Table body-->
+                    </table>
+                    <!--end::Table-->
+                </div>
+                <!--end::Card body-->
+            </div>
+            <!--end::Products-->
+        </div>
+        <!--end::Container-->
+    </div>
+    <!--end::Post-->
+</div>
+
+
+{% for object in objects %}
+
+
+<div class="modal fade my-5" tabindex="-1" id="m_{{object.superuser.superuser_id}}">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <form action="{% url 'auth:member_superuser_list' %}" method="POST" class="my-3" name="form_update_leads_limit">
+                <div class="modal-header">
+                    <h3 class="modal-title">Update Assign Leads Limit</h3>
+                    <div class="btn btn-icon btn-sm btn-active-light-primary ms-2" data-bs-dismiss="modal" aria-label="Close">
+                        <span class="svg-icon svg-icon-1"></span>
+                    </div>
+                    <!--end::Close-->
+                </div>
+                <div class="modal-body">
+                    <label class="my-3">Super User: {{object.superuser.user.email}}</label>
+                        {% csrf_token %}  
+                        <input type="hidden" name="superuser_id" class="form-control" value="{{object.superuser.superuser_id}}">
+                        <input type="number" name="update_leads_limit" min="-1" required class="form-control" value="{{object.assign_leads_limit}}"> 
+                    <p class="my-2">-1 for unlimited</p>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
+
+{% endfor %}
+
+
+
+{% endblock content %}
+
+
+{% block extra_js %}
+
+<script>
+    function copyKey(element) {
+        value_to_copy = element.getAttribute('value');
+        currentLabel = element.innerHTML;
+        navigator.clipboard.writeText(value_to_copy);
+        element.innerHTML = "Copied.";
+        setTimeout(function () {
+            element.innerHTML = currentLabel;
+        }, 2000)
+    }
+</script>
+
+{% endblock extra_js %}

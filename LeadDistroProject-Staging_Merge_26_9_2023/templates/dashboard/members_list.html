@@ -1,0 +1,376 @@
+{% extends 'base_dashboard.html' %}
+{% load static %}
+{% block dashboard_head_title %}{% endblock dashboard_head_title %} 
+
+{% block extra_css_start %}
+<link href="{% static 'plugins/custom/datatables/datatables.bundle.css'%}" rel="stylesheet" type="text/css" />
+{% endblock extra_css_start %}
+
+{% block content %}
+
+<style>
+    .grid-set-three-value{
+        display: grid;
+    grid-template-columns: 150px 200px 200px;
+    padding: 10px 30px;
+        column-gap: 10px;
+    }
+</style>
+
+<div class="content d-flex flex-column flex-column-fluid" id="kt_content">
+    <!--begin::Toolbar-->
+    <div class="toolbar" id="kt_toolbar">
+        <!--begin::Container-->
+        <div id="kt_toolbar_container" class="container-fluid d-flex flex-stack">
+            <!--begin::Page title-->
+            <div data-kt-swapper="true" data-kt-swapper-mode="prepend" data-kt-swapper-parent="{default: '#kt_content_container', 'lg': '#kt_toolbar_container'}" class="page-title d-flex align-items-center flex-wrap me-3 mb-5 mb-lg-0">
+                <!--begin::Title-->
+                <h1 class="d-flex text-dark fw-bolder fs-3 align-items-center my-1">All Team Members</h1>
+                <!--end::Title-->
+            </div>
+            <!--end::Page title-->
+            <!--begin::Actions-->
+            <div class="d-flex align-items-center gap-2 gap-lg-3 ms-auto">
+                <td class="text-center pe-0">
+                    <button data-bs-toggle="modal" data-bs-target="#update_leads_limit" class="btn btn-sm btn-primary mx-2 border-0 menu-link px-3 update-leads-limit-btn">Update Leads Limit</button>
+                </td>
+            </div>
+            <div class="d-flex align-items-center gap-2 gap-lg-3">
+                <!--begin::Primary button-->
+                <a href="{% url 'auth:link_team_member' %}" class="btn btn-sm btn-primary" >Link New Team Member</a>
+                <!--end::Primary button-->
+            </div>
+            <!--end::Actions-->
+        </div>
+        <!--end::Container-->
+    </div>
+    <!--end::Toolbar-->
+    <!--begin::Post-->
+    <div class="post d-flex flex-column-fluid" id="kt_post">
+        <!--begin::Container-->
+        <div id="kt_content_container" class="container-xxl">
+            <!--begin::Products-->
+            <div class="card card-flush">
+
+
+                <form method="POST" class="grid-set-three-value" >
+                                                    {% csrf_token %}
+<!--                    <label class="my-3">Search Lead Limit </label>-->
+                                                    <input type="number" name="leadlimit" required class="form-control"  placeholder="search" value="0">
+                                                    <button type="submit"  class=" border-0 menu-link px-3 btn btn-sm btn-light btn-active-light-primary" >
+                                                        Search Lead Limit
+                                                    </button>
+                </form>
+
+                <!--begin::Card body-->
+                <div class="card-body pt-0">
+                    <!--begin::Table-->
+                    <table class="table align-middle table-row-dashed fs-6 gy-5" id="kt_ecommerce_products_table">
+                        <!--begin::Table head-->
+                        <thead>
+                            <!--begin::Table row-->
+                            <tr class="text-start text-gray-700 fw-bolder fs-7 text-uppercase gs-0">
+                                <th>
+                                    <input type="checkbox" id="select-all-checkbox">
+                                </th>
+                                <th class="min-w-20px">Sr.</th>
+                                <th class="text-center min-w-70px">Email</th>
+                                {% comment %} <th class="text-center min-w-100px">Textdrip APIKey</th> {% endcomment %}
+                                <th class="text-center min-w-100px">Compaign</th>
+                                <th class="text-center min-w-100px">Leads Assign Limit</th>
+                                <th class="text-center min-w-100px" data-bs-toggle="tooltip" data-bs-placement="bottom" title="If Vacation mode (updated by member) is on. All future leads will not be assigned to that member.">
+                                    Vacation mode 
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-info-circle" viewBox="0 0 16 16">
+                                        <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"></path>
+                                        <path d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533L8.93 6.588zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0z"></path>
+                                    </svg>
+                                </th>
+                                <th class="text-center min-w-100px">Allow All States</th>
+                                <th class="text-center min-w-100px">Disable(Pause)</th>
+                                <th class="text-center min-w-100px">Added At</th>
+                                <th class="text-center min-w-100px">Details</th>
+                                <th class="text-center min-w-70px">Actions</th>
+                            </tr>
+                            <!--end::Table row-->
+                        </thead>
+                        <!--end::Table head-->
+                        <!--begin::Table body-->
+                        <tbody class="fw-bold text-gray-800">
+                            <!--begin::Table row-->
+                            {% for team_member in team_members %}
+                                <tr>
+                                    <td>
+                                        <input type="checkbox" class="team-member-checkbox" value="{{team_member.team_id}}">
+                                    </td>
+                                    <td>
+                                        {{forloop.counter}} 
+                                    </td>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <div class="ms-5">
+                                                <a href="{{team_member.get_member_detail_url}}" title="{{team_member.user.name}}" class="text-warning text-hover-primary fs-5 fw-bolder" >{{team_member.user.email}}</a>
+                                            </div>
+                                        </div>
+                                    </td> 
+                                    {% comment %} <td class="text-center pe-0" >
+                                        <span class="fw-bolder text-warning ms-3" title="{{team_member.user.name}}">{{team_member.user.email}}</span>
+                                    </td> {% endcomment %}
+                                    {% comment %} <td class="text-center pe-0" >
+                                        <button class="bg-transparent border-0 menu-link px-3 text-white fw-bolder text-success ms-3" onclick="copyKey(this)" value="{{team_member.campaign_data.textdrip_apikey}}">
+                                            {{team_member.campaign_data.textdrip_apikey|truncatechars:9}} <span class="text-decoration-underline">copy</span> 
+                                        </button>
+                                    </td> {% endcomment %}
+                                    <td class="text-center pe-0">
+                                        <span class="fw-bolder text-dark">{{team_member.campaign_data_extend.textdrip_compaign_value}} {{team_member.newnew}}</span>
+                                    </td>
+                                    <td class="text-center pe-0">
+                                        {% if team_member.campaign_data.assign_leads_limit == -1 %}
+                                        <span class="fw-bolder text-dark">Unlimited</span>
+                                        {% else %}
+                                        <span class="fw-bolder text-dark">{{team_member.campaign_data.assign_leads_limit}} </span>
+                                        {% endif %}
+                                    </td>
+                                    <td class="text-center pe-0">
+                                        {% if team_member.vacation_mode %}
+                                            <span class="badge badge-circle badge-success"><i class="bi bi-check-lg text-white"></i></span>
+                                        {% else %}
+                                            <span class="badge badge-circle badge-danger"><i class="bi bi-x-lg text-black"></i></span>
+                                        {% endif %}
+                                    </td>
+
+                                    <td class="text-center pe-0">
+                                        {% if team_member.all_states %}
+                                            <span class="badge badge-circle badge-success"><i class="bi bi-check-lg text-white"></i></span>
+                                        {% else %}
+                                            <span class="badge badge-circle badge-danger"><i class="bi bi-x-lg text-black"></i></span>
+                                        {% endif %}
+                                    </td>
+                                    <td class="text-center pe-0">
+                                        {% if team_member.campaign_data.is_temporary_disabled %}
+                                            <span class="badge badge-circle badge-success"><i class="bi bi-check-lg text-white"></i></span>
+                                        {% else %}
+                                            <span class="badge badge-circle badge-danger"><i class="bi bi-x-lg text-black"></i></span>
+                                        {% endif %}
+                                    </td>
+                                    <td class="text-center pe-0">
+                                        <span class="fw-bolder text-dark">{{team_member.created}}</span>
+                                    </td>
+                                    <td class="text-center pe-0">
+                                        <a href="{{team_member.get_member_detail_url}}" class="badge badge-light-primary">View</a>
+                                    </td>
+                                    <!--begin::Action=-->
+                                    <td class="text-center">
+                                        <a href="#" class="btn btn-sm btn-light btn-active-light-primary" data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end">Actions 
+                                        <!--begin::Svg Icon | path: icons/duotune/arrows/arr072.svg-->
+                                        <span class="svg-icon svg-icon-5 m-0">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                                <path d="M11.4343 12.7344L7.25 8.55005C6.83579 8.13583 6.16421 8.13584 5.75 8.55005C5.33579 8.96426 5.33579 9.63583 5.75 10.05L11.2929 15.5929C11.6834 15.9835 12.3166 15.9835 12.7071 15.5929L18.25 10.05C18.6642 9.63584 18.6642 8.96426 18.25 8.55005C17.8358 8.13584 17.1642 8.13584 16.75 8.55005L12.5657 12.7344C12.2533 13.0468 11.7467 13.0468 11.4343 12.7344Z" fill="currentColor" />
+                                            </svg>
+                                        </span>
+                                        <!--end::Svg Icon--></a>
+                                        <!--begin::Menu-->
+                                        <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-800 menu-state-bg-light-primary fw-bold fs-7 w-200px py-4" data-kt-menu="true">
+                                            <!--begin::Menu item-->
+                                            <div class="menu-item px-3">
+                                                <form method="POST" action="{% url 'auth:team_list' %}" onSubmit="return confirm('Are you sure you wish to update the campaign of member?');">
+                                                    {% csrf_token %}  
+                                                    <input type="hidden" name="member_id" required class="form-control" value="{{team_member.team_id}}">
+                                                    <button type="submit" class="bg-transparent border-0 menu-link px-3" >Update Campaign</button>
+                                                </form>
+                                            </div>
+                                            <!--end::Menu item-->
+                                            <!--begin::Menu item-->
+                                            <div class="menu-item px-3">
+                                                <form method="POST" action="{% url 'auth:unlink_team_member' %}" onSubmit="return confirm('Are you sure you wish to unlink the member?');">
+                                                    {% csrf_token %}  
+                                                    <input type="hidden" name="unlink_member" required class="form-control" value="{{team_member.team_id}}">
+                                                    <button type="submit" class="bg-transparent border-0 menu-link px-3" >Unlink Account</button>
+                                                </form>
+                                            </div>
+                                            <!--end::Menu item-->
+                                            <!--begin::Menu item-->
+                                            <div class="menu-item px-3">
+                                                <button data-bs-toggle="modal" data-bs-target="#m_{{team_member.team_id}}" class="bg-transparent border-0 menu-link px-3" >Update Leads Limit</button>
+                                            </div>
+                                            <!--end::Menu item-->
+                                            <!--begin::Menu item-->
+                                             <div class="menu-item px-3">
+                                                <form method="POST" action="{% url 'auth:disable_enable_team_member' %}" onSubmit="return confirm('Are you sure you wish to enable/disable the member?');">
+                                                    {% csrf_token %}  
+                                                    <input type="hidden" name="team_member_id" required class="form-control" value="{{team_member.team_id}}">
+                                                    <button type="submit" class="bg-transparent border-0 menu-link px-3" >
+                                                        {% if team_member.campaign_data.is_temporary_disabled %}
+                                                            Enable Member
+                                                        {% else %}
+                                                            Disable(Pause) Member
+                                                        {% endif %}
+                                                    </button>
+                                                </form>
+                                            </div>
+                                            <!--end::Menu item-->
+
+                                        </div>
+                                        <!--end::Menu-->
+                                    </td>
+                                    <!--end::Action=-->
+                                </tr>
+                                <!--end::Table row-->
+                            {% empty %}
+                                <tr>
+                                        <td colspan="4">
+                                            No Team Members Found!
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                                                            
+                        
+                        </tbody>
+                        <!--end::Table body-->
+                    </table>
+                    <!--end::Table-->
+                </div>
+                <!--end::Card body-->
+            </div>
+            <!--end::Products-->
+        </div>
+        <!--end::Container-->
+    </div>
+    <!--end::Post-->
+</div>
+
+
+{% for team_member in team_members %}
+
+<div class="modal fade my-5" tabindex="-1" id="m_{{team_member.team_id}}">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <form action="{% url 'auth:team_list' %}" method="POST" class="my-3" name="form_update_leads_limit">
+                <div class="modal-header">
+                    <h3 class="modal-title">Update Assign Leads Limit</h3>
+                    <div class="btn btn-icon btn-sm btn-active-light-primary ms-2" data-bs-dismiss="modal" aria-label="Close">
+                        <span class="svg-icon svg-icon-1"></span>
+                    </div>
+                    <!--end::Close-->
+                </div>
+                <div class="modal-body">
+                    <label class="my-3">Member: {{team_member.user.email}}</label>
+                        {% csrf_token %}  
+                        <input type="hidden" name="member_id" class="form-control" value="{{team_member.team_id}}">
+                        <input type="number" name="update_leads_limit" min="-1" required class="form-control" value="{{team_member.campaign_data.assign_leads_limit}}"> 
+                    <p class="my-2">-1 for unlimited</p>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
+{% endfor %}
+
+<div class="modal fade my-5" tabindex="-1" id="update_leads_limit">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <form id="updateLeadsLimitForm" class="my-3" method="POST" action="{% url 'auth:update_leads_limit' %}">
+                <div class="modal-header">
+                    <h3 class="modal-title">Update Assign Leads Limit</h3>
+                    <div class="btn btn-icon btn-sm btn-active-light-primary ms-2" data-bs-dismiss="modal" aria-label="Close">
+                        <span class="svg-icon svg-icon-1"></span>
+                    </div>
+                    <!--end::Close-->
+                </div>
+                <div class="modal-body">
+                    <label class="my-3">Leads Limit:</label>
+                        {% csrf_token %}
+                        <input type="number" name="update_leads_limit" min="-1" required class="form-control"> 
+                    <p class="my-2">-1 for unlimited</p>
+                     <!-- Add a hidden input field to store the selected checkboxes -->
+                     <input type="hidden" name="selected_checkboxes" class="selected-checkbox">
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
+
+{% endblock content %}
+
+
+{% block extra_js %}
+
+<script>
+    function copyKey(element) {
+        value_to_copy = element.getAttribute('value');
+        currentLabel = element.innerHTML;
+        navigator.clipboard.writeText(value_to_copy);
+        element.innerHTML = "Copied.";
+        setTimeout(function () {
+            element.innerHTML = currentLabel;
+        }, 2000)
+    }
+</script>
+
+<script>
+    var selectedCheckboxDataList = []; // List to store the data of selected checkboxes
+
+    // Add an event listener to the "Select All" checkbox
+    var selectAllCheckbox = document.querySelector('#select-all-checkbox');
+    selectAllCheckbox.addEventListener('change', function() {
+        var checkboxes = document.querySelectorAll('.team-member-checkbox');
+
+        if (this.checked) {
+            // If "Select All" is checked, select all checkboxes and add their values to the list
+            checkboxes.forEach(function(checkbox) {
+                checkbox.checked = true;
+                selectedCheckboxDataList.push(checkbox.value);
+            });
+        } else {
+            // If "Select All" is unchecked, unselect all checkboxes and clear the list
+            checkboxes.forEach(function(checkbox) {
+                checkbox.checked = false;
+            });
+            selectedCheckboxDataList = [];
+        }
+
+        // Update the value of the hidden input field
+        document.querySelector('.selected-checkbox').value = selectedCheckboxDataList.join(',');
+    });
+
+    // Add an event listener to individual checkboxes
+    var checkboxes = document.querySelectorAll('.team-member-checkbox');
+    checkboxes.forEach(function(checkbox) {
+        checkbox.addEventListener('change', function() {
+            // Check if the checkbox is checked
+            if (checkbox.checked) {
+                // Capture the data (the "value" attribute) of the selected checkbox
+                selectedCheckboxDataList.push(checkbox.value);
+            } else {
+                // If the checkbox is unchecked, remove its data from the list
+                const index = selectedCheckboxDataList.indexOf(checkbox.value);
+                if (index !== -1) {
+                    selectedCheckboxDataList.splice(index, 1);
+                }
+            }
+
+            // Update the value of the hidden input field
+            document.querySelector('.selected-checkbox').value = selectedCheckboxDataList.join(',');
+            // Check if all individual checkboxes are checked
+            var allChecked = Array.from(checkboxes).every(function(checkbox)
+            {
+                return checkbox.checked;
+            });
+
+            // Update the "Select All" checkbox accordingly
+            selectAllCheckbox.checked = allChecked;
+        });
+    });
+</script>
+{% endblock extra_js %}

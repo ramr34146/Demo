@@ -1,0 +1,14 @@
+stripe
+requests
+Django
+djangorestframework
+django-ckeditor
+python-dotenv
+numpy
+environ
+pandas
+spacy
+beautifulsoup4
+PyJWT
+PyAutoGUI
+gunicorn

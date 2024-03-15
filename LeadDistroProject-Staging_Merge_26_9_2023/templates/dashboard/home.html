@@ -1,0 +1,352 @@
+{% extends 'base_dashboard.html' %}
+{% load static %}
+{% block content %}
+
+<div class="post d-flex flex-column-fluid" id="kt_post">
+	<!--begin::Container-->
+	<div id="kt_content_container" class="container-xxl">
+<div class="card mb-5 mb-xl-10" id="kt_profile_details_view">
+	<!--begin::Card header-->
+	<div class="card-header cursor-pointer">
+		<!--begin::Card title-->
+		<div class="card-title m-0">
+			<h3 class="fw-bold m-0">Profile Details</h3>
+		</div>
+		<!--end::Card title-->
+		<!--begin::Action-->
+		<a href="{% url 'users:edit_profile' %}" class="btn btn-primary align-self-center">Edit Profile</a>
+		<!--end::Action-->
+	</div>
+	<!--begin::Card header-->
+	{% if is_superuser %}
+	<!--begin::Card body-->
+	<div class="card-body p-9 pb-2">
+		<!--begin::Row-->
+		<div class="row mb-7">
+			<label class="col-lg-4 fw-semibold text-white">User ID:</label>
+			<div class="col-lg-8">
+				<span class="fw-bold fs-6 text-gray-800">{{superuser.superuser_id}}</span>
+			</div>
+		</div>
+		<!--end::Row-->
+		{% comment %} <!--begin::Row-->
+		<div class="row mb-7">
+			<label class="col-lg-4 fw-semibold text-white">API Key (FOR API CALLS)</label>
+			<div class="col-lg-8">
+				<button class="bg-transparent border-0 menu-link text-white fw-bolder text-success fw-bold fs-6 text-gray-800" onclick="copyKey(this)" value="{{profile.api_key}} ">
+					{{profile.api_key|truncatechars:9}} <span class="text-decoration-underline">copy</span> 
+				</button>
+
+			</div>
+		</div>
+		<!--end::Row--> {% endcomment %}
+		<!--begin::Row-->
+		<div class="row mb-7">
+			<label class="col-lg-4 fw-semibold text-white">Account Type</label>
+			<div class="col-lg-8">
+				<span class="fw-bold fs-6 text-gray-800">
+					Super User 
+					{% if request.user.superusers.account_type == 'ush' %}
+						<span class="badge badge-light-success fw-bolder px-2 py-1 ms-2">{{request.user.superusers.get_account_type_display}}  </span>
+					{% endif %}
+				</span>
+			</div>
+		</div>
+		<!--end::Row-->
+		<!--begin::Row-->
+		<div class="row mb-7">
+			<label class="col-lg-4 fw-semibold text-white">Full Name</label>
+			<div class="col-lg-8">
+				<span class="fw-bold fs-6 text-gray-800">{{user.name|title}}</span>
+			</div>
+		</div>
+		<!--end::Row-->
+		<!--begin::Row-->
+		<div class="row mb-7">
+			<label class="col-lg-4 fw-semibold text-white"> Email</label>
+			<div class="col-lg-8">
+				<span class="fw-bold fs-6 text-gray-800">{{user.email}}</span>
+			</div>
+		</div>
+		<!--end::Row-->
+		<!--begin::Row-->
+		<div class="row mb-7">
+			<label class="col-lg-4 fw-semibold text-white">Date Joined</label>
+			<div class="col-lg-8">
+				<span class="fw-bold fs-6 text-gray-800">{{user.date_joined}}</span>
+			</div>
+		</div>
+		<!--end::Row-->
+		<!--begin::Row-->
+		<div class="row mb-7">
+			<label class="col-lg-4 fw-semibold text-white">Last Login</label>
+			<div class="col-lg-8">
+				<span class="fw-bold fs-6 text-gray-800">{{user.last_login}}</span>
+			</div>
+		</div>
+		<!--end::Row-->
+		
+		<!--begin::Row-->
+		<div class="row mb-7">
+			<label class="col-lg-4 fw-semibold text-white">Company Name</label>
+			<div class="col-lg-8">
+				<span class="fw-bold fs-6 text-gray-800">{{superuser.company_name}} </span>
+			</div>
+		</div>
+		<!--end::Row-->
+		<!--begin::Row-->
+		<div class="row mb-7">
+			<label class="col-lg-4 fw-semibold text-white">Region</label>
+			<div class="col-lg-8">
+				<span class="fw-bold fs-6 text-gray-800">{{superuser.region}} </span>
+			</div>
+		</div>
+		<!--end::Row-->
+		<!--begin::Row-->
+		<div class="row mb-7">
+			<label class="col-lg-4 fw-semibold text-white">Default New Team Member Leads Limit</label>
+			<div class="col-lg-8">
+				<span class="fw-bold fs-6 text-gray-800">{{superuser.assign_leads_limit}} </span>
+			</div>
+		</div>
+		<!--end::Row-->
+		
+		
+		<!--begin::Example-->
+		<div class="separator separator-content my-15">Leads&nbsp;Info</div>
+		<!--end::Example-->
+		<!--begin::Row-->
+		<div class="row mb-7">
+			<label class="col-lg-4 fw-semibold text-white">Total Projects</label>
+			<div class="col-lg-8">
+				<span class="fw-bold fs-6 text-gray-800">{{user.count_total_projects_uploaded}} </span>
+			</div>
+		</div>
+		<!--end::Row-->
+		<!--begin::Row-->
+		<div class="row mb-7">
+			<label class="col-lg-4 fw-semibold text-white">Total Leads</label>
+			<div class="col-lg-8">
+				<span class="fw-bold fs-6 text-gray-800">{{total_uploaded_leads}} </span>
+			</div>
+		</div>
+		<!--end::Row-->
+		<!--begin::Row-->
+		<div class="row mb-7">
+			<label class="col-lg-4 fw-semibold text-white">Total API Leads</label>
+			<div class="col-lg-8">
+				<span class="fw-bold fs-6 text-gray-800">{{api_leads}} </span>
+			</div>
+		</div>
+		<!--end::Row-->
+		<!--begin::Row-->
+		<div class="row mb-7">
+			<label class="col-lg-4 fw-semibold text-white">Total Active Team Members</label>
+			<div class="col-lg-8">
+				<span class="fw-bold fs-6 text-gray-800">{{superuser.count_total_team_members}} </span>
+			</div>
+		</div>
+		<!--end::Row-->
+
+
+		<!--begin::Example-->
+			<div class="separator separator-content my-15">Landline&nbsp;Remover</div>
+		<!--end::Example-->
+		<!--begin::Row-->
+		<div class="row mb-7">
+			<label class="col-lg-4 fw-semibold text-white">APIKey</label>
+			<div class="col-lg-8">
+				{% if superuser.llr_apikey %}
+					<button  class="bg-transparent border-0 menu-link text-white fw-bolder text-success fw-bold fs-6 text-gray-800" onclick="copyKey(this)" value="{{superuser.llr_apikey}}">
+						{{superuser.llr_apikey|truncatechars:20}} <span class="text-decoration-underline">copy</span> 
+					</button>
+				{% else %}
+					<span class="fw-bold fs-6 text-gray-800">{{superuser.llr_apikey|default:"-"}} </span>
+				{% endif %}
+			</div>
+		</div>
+		<!--end::Row-->
+		<!--begin::Row-->
+		<div class="row mb-7">
+			<label class="col-lg-4 fw-semibold text-white">Remaining Credits</label>
+			<div class="col-lg-8">
+				{{llr_credits|default:'-'}}
+			</div>
+		</div>
+		<!--end::Row-->
+		<!--begin::Row-->
+		<div class="row mb-7">
+			<label class="col-lg-4 fw-semibold text-white">Auto TopUp</label>
+			<div class="col-lg-8">
+				{% if llr_auto_topup %}
+					<span class="badge badge-circle badge-success"><i class="bi bi-check-lg text-white"></i></span>
+				{% else %}
+					<span class="badge badge-circle badge-danger"><i class="bi bi-x-lg text-black"></i></span>
+				{% endif %}
+			</div>
+		</div>
+		<!--end::Row-->
+
+
+
+	</div>
+	<!--end::Card body-->
+	
+
+
+	{% elif is_teammeber %}
+	<!--begin::Card body-->
+	<div class="card-body p-9">
+		<!--begin::Row-->
+		<div class="row mb-7">
+			<label class="col-lg-4 fw-semibold text-white">User ID:</label>
+			<div class="col-lg-8">
+				<span class="fw-bold fs-6 text-gray-800">{{team_member.team_id}}</span>
+			</div>
+		</div>
+		<!--end::Row-->
+		<!--begin::Row-->
+		<div class="row mb-7">
+			<label class="col-lg-4 fw-semibold text-white">API Key (FOR API CALLS)</label>
+			<div class="col-lg-8">
+				<button class="bg-transparent border-0 menu-link text-white fw-bolder text-success fw-bold fs-6 text-gray-800" onclick="copyKey(this)" value="{{profile.api_key}} ">
+					{{profile.api_key|truncatechars:9}} <span class="text-decoration-underline">copy</span> 
+				</button>
+			</div>
+		</div>
+		<!--end::Row-->
+		<!--begin::Row-->
+		<div class="row mb-7">
+			<label class="col-lg-4 fw-semibold text-white">Account Type</label>
+			<div class="col-lg-8">
+				<span class="fw-bold fs-6 text-gray-800">
+					Member Account
+				</span>
+			</div>
+		</div>
+		<!--end::Row-->
+		<!--begin::Row-->
+		<div class="row mb-7">
+			<label class="col-lg-4 fw-semibold text-white">Full Name</label>
+			<div class="col-lg-8">
+				<span class="fw-bold fs-6 text-gray-800">{{user.name|title}}</span>
+			</div>
+		</div>
+		<!--end::Row-->
+		<!--begin::Row-->
+		<div class="row mb-7">
+			<label class="col-lg-4 fw-semibold text-white"> Email</label>
+			<div class="col-lg-8">
+				<span class="fw-bold fs-6 text-gray-800">{{user.email}}</span>
+			</div>
+		</div>
+		<!--end::Row-->
+		<!--begin::Row-->
+		<div class="row mb-7">
+			<label class="col-lg-4 fw-semibold text-white">Date Joined</label>
+			<div class="col-lg-8">
+				<span class="fw-bold fs-6 text-gray-800">{{user.date_joined}}</span>
+			</div>
+		</div>
+		<!--end::Row-->
+		<!--begin::Row-->
+		<div class="row mb-7">
+			<label class="col-lg-4 fw-semibold text-white">Last Login</label>
+			<div class="col-lg-8">
+				<span class="fw-bold fs-6 text-gray-800">{{user.last_login}}</span>
+			</div>
+		</div>
+		<!--end::Row-->
+		<!--begin::Row-->
+		<div class="row mb-7">
+			<label class="col-lg-4 fw-semibold text-white" data-bs-toggle="tooltip" data-bs-placement="bottom" title="If Vacation mode is on. You would not be able to get leads from any superuser.">
+				Vacation mode
+				<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-info-circle" viewBox="0 0 16 16">
+					<path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"></path>
+					<path d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533L8.93 6.588zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0z"></path>
+				</svg>
+			</label>
+			<div class="col-lg-8">
+				<span class="fw-bold fs-6 text-gray-800">
+					{% if team_member.vacation_mode %}
+						<span class="badge badge-circle badge-success"><i class="bi bi-check-lg text-white"></i></span>
+					{% else %}
+						<span class="badge badge-circle badge-danger"><i class="bi bi-x-lg text-black"></i></span>
+					{% endif %}
+				</span>
+			</div>
+		</div>
+		<!--end::Row-->
+
+		<!--begin::-->
+		<div class="separator separator-content my-15">State(s)&nbsp;Info</div>
+		<!--end::-->
+		<!--begin::Row-->
+		<div class="row mb-7">
+			<label class="col-lg-4 fw-semibold text-white">All States Allowed</label>
+			<div class="col-lg-8">
+				{% if team_member.all_states %}
+					<span class="badge badge-circle badge-success"><i class="bi bi-check-lg text-white"></i></span>
+				{% else %}
+					<span class="badge badge-circle badge-danger"><i class="bi bi-x-lg text-black"></i></span>
+				{% endif %}
+			</div>
+		</div>
+		<!--end::Row-->
+		<!--begin::Row-->
+		<div class="row mb-7">
+			<label class="col-lg-4 fw-semibold text-white">States List <br>
+				<small>	Note: It will be applicable if 'All States Allowed' is not active</small></label>
+			<div class="col-lg-8">
+				<span class="fw-bold fs-6 text-gray-800">
+					{% for state_key, state_value in team_member.states_list.items %}
+						<span class="badge badge-light-warning fw-bolder px-2 py-1 ms-2">{{state_value|title}}</span>
+					{% endfor %}
+				</span>
+			</div>
+		</div>
+		<!--end::Row-->
+		
+		
+		{% comment %} 
+		<!--begin::Row-->
+		<div class="row mb-7">
+			<label class="col-lg-4 fw-semibold text-white">LandlineRemover APIKey</label>
+			<div class="col-lg-8">
+				{% if team_member.llr_apikey %}
+					<button  class="bg-transparent border-0 menu-link text-white fw-bolder text-success fw-bold fs-6 text-gray-800" onclick="copyKey(this)" value="{{team_member.llr_apikey}}">
+						{{team_member.llr_apikey|truncatechars:9}} <span class="text-decoration-underline">copy</span> 
+					</button>
+				{% else %}
+					<span class="fw-bold fs-6 text-gray-800">{{team_member.llr_apikey|default:"-"}} </span>
+				{% endif %}
+
+			</div>
+		</div>
+		<!--end::Row--> 
+		{% endcomment %}
+	</div>
+	<!--end::Card body-->
+	{% else %}
+		Nothing Found
+	{% endif %}
+</div>
+</div>
+</div>
+
+{% endblock content %}
+{% block extra_js %}
+
+<script>
+    function copyKey(element) {
+        value_to_copy = element.getAttribute('value');
+        currentLabel = element.innerHTML;
+        navigator.clipboard.writeText(value_to_copy);
+        element.innerHTML = "Copied.";
+        setTimeout(function () {
+            element.innerHTML = currentLabel;
+        }, 2000)
+    }
+</script>
+
+{% endblock extra_js %}

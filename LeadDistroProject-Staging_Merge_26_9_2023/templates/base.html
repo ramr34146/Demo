@@ -1,0 +1,30 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<title>{% block head_title %}Home{% endblock head_title %}- LeadDistro Textdrip Project</title>
+		<meta charset="utf-8" />
+		{% comment %} <meta name="description" content="The most advanced Bootstrap Admin Theme on Themeforest trusted by 94,000 beginners and professionals. Multi-demo, Dark Mode, RTL support and complete React, Angular, Vue &amp; Laravel versions. Grab your copy now and get life-time updates for free." /> {% endcomment %}
+		{% comment %} <meta name="keywords" content="Metronic, bootstrap, bootstrap 5, Angular, VueJs, React, Laravel, admin themes, web design, figma, web development, free templates, free admin themes, bootstrap theme, bootstrap template, bootstrap dashboard, bootstrap dak mode, bootstrap button, bootstrap datepicker, bootstrap timepicker, fullcalendar, datatables, flaticon" /> {% endcomment %}
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		{% include 'pages/favicons.html' %}
+		{% comment %} <meta property="og:locale" content="en_US" /> {% endcomment %}
+		{% comment %} <meta property="og:type" content="article" /> {% endcomment %}
+		{% comment %} <meta property="og:title" content="Metronic - Bootstrap 5 HTML, VueJS, React, Angular &amp; Laravel Admin Dashboard Theme" /> {% endcomment %}
+		{% comment %} <meta property="og:url" content="https://keenthemes.com/metronic" /> {% endcomment %}
+		{% comment %} <meta property="og:site_name" content="Keenthemes | Metronic" /> {% endcomment %}
+		<link rel="canonical" href="{{ request.get_full_path }}" />
+		{% comment %} <link rel="shortcut icon" href="https://preview.keenthemes.com/metronic8/demo1/assets/media/logos/favicon.ico" /> {% endcomment %}
+		<link href="{% static 'plugins/global/plugins.bundle.css' %}" rel="stylesheet" type="text/css" />
+		<link href="{% static 'css/style.bundle.css' %}" rel="stylesheet" type="text/css" />
+	</head>
+	{% comment %} <body id="kt_body" data-bs-spy="scroll" data-bs-target="#kt_landing_menu" data-bs-offset="200" class="bg-white position-relative"> {% endcomment %}
+    <body id="kt_body" class="bg-dark">
+		{% include 'pages/show_alert_messages.html' %}
+		{% block content %}{% endblock content %}
+        {% include 'pages/js.html' %}
+        {% block extrabody %}{% endblock extrabody %}
+        {% block extra_js %}{% endblock extra_js %}
+
+	</body>
+</html>

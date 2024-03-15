@@ -1,0 +1,5 @@
+{% if request.user.account_type == 'team' %}
+    {% include 'dashboard/pages/asside_bar_team.html' %}
+{% else %}
+    {% include 'dashboard/pages/asside_bar_sup.html' %}
+{% endif %}

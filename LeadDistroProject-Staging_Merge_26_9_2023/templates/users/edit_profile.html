@@ -1,0 +1,210 @@
+{% extends 'base_dashboard.html' %}
+{% load static %}
+{% block dashboard_head_title %}{% endblock dashboard_head_title %} 
+
+{% block extra_css_start %}
+<link href="{% static 'plugins/custom/datatables/datatables.bundle.css'%}" rel="stylesheet" type="text/css" />
+{% endblock extra_css_start %}
+
+{% block extra_css %}
+
+{% endblock extra_css %}
+
+{% block content %}
+
+<div class="content d-flex flex-column flex-column-fluid" id="kt_content">
+	<!--begin::Toolbar-->
+	<div class="toolbar" id="kt_toolbar">
+		<!--begin::Container-->
+		<div id="kt_toolbar_container" class="container-fluid d-flex flex-stack">
+			<!--begin::Page title-->
+			<div data-kt-swapper="true" data-kt-swapper-mode="prepend" data-kt-swapper-parent="{default: '#kt_content_container', 'lg': '#kt_toolbar_container'}" class="page-title d-flex align-items-center flex-wrap me-3 mb-5 mb-lg-0">
+				<!--begin::Title-->
+				<h1 class="d-flex text-dark fw-bolder fs-3 align-items-center my-1">Update Profile Details</h1>
+				<!--end::Title-->
+			</div>
+			<!--end::Page title-->
+		</div>
+		<!--end::Container-->
+	</div>
+	<!--end::Toolbar-->
+	<!--begin::Post-->
+	<div class="post d-flex flex-column-fluid" id="kt_post">
+		<!--begin::Container-->
+		<div id="kt_content_container" class="container-xxl">
+			<!--begin::Form-->
+			<form  class="form d-flex flex-column flex-lg-row fv-plugins-bootstrap5 fv-plugins-framework" method="POST" action="." >
+				{% csrf_token %}        
+				<!--begin::Main column-->
+				<div class="d-flex flex-column flex-row-fluid gap-7 gap-lg-10">
+					<!--begin::Tab content-->
+					<div class="tab-content">
+						<!--begin::Tab pane-->
+						<div class="tab-pane fade show active" >
+							<div class="d-flex flex-column gap-7 gap-lg-10">
+                                {% if is_superuser %}
+								<!--begin::General options-->
+								<div class="card card-flush py-4">
+									<div class="card-body pt-0">
+										<!--begin::Input group-->
+										<div class="mb-10 fv-row fv-plugins-icon-container mt-5">
+											<label class="required form-label">Full Name</label>
+											<input type="text" name="sp_fullname" required class="form-control mb-2" placeholder="Enter Your Name" value="{{request.user.name|title}}">
+                                        </div>
+										<!--end::Input group-->
+
+                                        <!--begin::Input group-->
+										<div class="mb-10 fv-row fv-plugins-icon-container mt-5">
+											<label class="required form-label">Company Name</label>
+											<input type="text" name="sp_company_name" required class="form-control mb-2" placeholder="Enter Your Company Name" value="{{superuser.company_name}}">
+                                        </div>
+										<!--end::Input group-->
+                                     
+                                        <!--begin::Input group-->
+										<div class="mb-10 fv-row fv-plugins-icon-container mt-5">
+											<label class="required form-label">Region</label>
+											<input type="text" name="sp_region" required class="form-control mb-2" placeholder="Enter Your Region" value="{{superuser.region}}">
+                                        </div>
+										<!--end::Input group-->
+                                        
+                                        <!--begin::Input group-->
+										<div class="mb-10 fv-row fv-plugins-icon-container mt-5">
+											<label class="form-label">Landline Remover APIKey</label>
+											<input type="text" name="sp_llr_apikey" class="form-control mb-2" placeholder="Enter Your LandlineRemover APIKey or Leave it Empty" value="{{superuser.llr_apikey}}">
+                                        </div>
+
+										<div class="mb-10 fv-row fv-plugins-icon-container mt-5">
+											<label class="form-label">Default New Team Member Leads Limit</label>
+											<input type="number" name="assign_leads_limit" class="form-control mb-2" placeholder="Enter assign leads limit" min="-1" value="{{superuser.assign_leads_limit}}">
+                                        </div>
+										<!--end::Input group-->
+									</div>
+								</div>
+								<!--end::General options-->
+                                {% else %}
+                                    <div class="card card-flush py-4">
+									    <div class="card-body pt-0">
+                                            <!--begin::Input group-->
+                                            <div class="mb-10 fv-row fv-plugins-icon-container mt-5">
+                                                <label class="required form-label">Full Name</label>
+                                                <input type="text" name="tm_fullname" required class="form-control mb-2" placeholder="Enter Your Name" value="{{request.user.name|title}}">
+                                            </div>
+                                            <!--end::Input group-->
+                                            <!--begin::Input group-->
+                                            {% comment %} <div class="mb-10 fv-row fv-plugins-icon-container mt-5">
+                                                <label class="form-label">Landline Remover APIKey</label>
+                                                <input type="text" name="tm_llr_apikey" class="form-control mb-2" placeholder="Enter Your LandlineRemover APIKey or Leave it Empty" value="{{team_member.llr_apikey}}">
+                                            </div> {% endcomment %}
+
+											<!--begin::Input group-->
+											<div class="mb-10 fv-row fv-plugins-icon-container mt-5">
+												<div class="form-check form-switch form-check-custom form-check-success form-check-solid">
+													<input class="form-check-input h-20px w-40px" type="checkbox" name="vacation_mode" {% if team_member.vacation_mode %} checked="checked" {% endif %} id="vacation_mode" />
+													<label class="form-check-label h4 mb-0 px-3">
+														Vacation Mode
+													</label>
+												</div>
+											</div> 
+											<!--end::Input group-->
+{% comment %} 
+											<!--begin::Example-->
+											<div class="separator separator-content my-15">State(s)&nbsp;Info</div>
+											<!--end::Example--> {% endcomment %}
+											
+
+											<!--begin::Input group-->
+											<div class="mb-10 fv-row fv-plugins-icon-container mt-5">
+												<div class="form-check form-switch form-check-custom form-check-success form-check-solid">
+													<input class="form-check-input h-20px w-40px" type="checkbox" name="all_states" {% if team_member.all_states %} checked="checked" {% endif %} id="all_states" />
+													<label class="form-check-label h4 mb-0 px-3">
+														All States Allowed
+													</label>
+												</div>
+											</div> 
+											<!--end::Input group-->
+
+											<!--begin::Input group-->
+                                            <div class="mb-10 fv-row fv-plugins-icon-container mt-5">
+                                                <label class="form-label">Select atleast one State(s)</label>
+												<select {% if not team_member.all_states %} required {% endif %} id="state_list" class="form-select form-select-solid" data-control="select2" name="state_list" data-placeholder="Select a state(s)" data-allow-clear="true" multiple="multiple">
+													<option></option>
+													{% for state_key, state_value in states_list.items %}
+														<option {% if state_value.1 %} selected="selected" {% endif %} value="{{state_key}}_{{state_value.0}}">{{state_value.0|title}}</option>
+													{% endfor %}
+													
+												</select>
+											</div>
+											<!--begin::Input group-->
+                                    	</div>
+                                    </div>
+                                    <!--end::Input group-->
+                                {% endif %}
+							</div>
+						</div>
+						<!--end::Tab pane-->
+					
+					</div>
+					<!--end::Tab content-->
+					<div class="d-flex justify-content-center">
+						<!--end::Button-->
+						<!--begin::Button-->
+						<button type="submit" id="submit_btn_process" class="btn btn-primary my-5 text-center"> 
+							<span class="indicator-label">Update Profile</span> 
+							<span class="indicator-progress">Please wait... 
+							<span class="spinner-border spinner-border-sm align-middle ms-2"></span></span>
+						</button>
+						<!--end::Button-->
+					</div>
+				</div>
+				<!--end::Main column-->
+				<div></div>
+			</form>
+			<!--end::Form-->
+		</div>
+		<!--end::Container-->
+	</div>
+	<!--end::Post-->
+</div>
+{% endblock content %}
+
+{% block extra_js %}
+
+<script type="text/javascript">
+{% comment %} submitButton = document.querySelector('#submit_btn_process');
+submitButton.addEventListener('click', function () {
+	allow_ind = 'true'
+	$('input:required').each(function() {
+		if ($(this).val() === '')
+			allow_ind = 'false'
+		});
+
+	if (allow_ind==="true"){
+		submitButton.setAttribute('data-kt-indicator', 'on');
+	}
+}); {% endcomment %}
+
+
+
+
+{% comment %} var checkBox_all_states = document.querySelector('#all_states');
+var select_state_list = document.querySelector('#state_list');
+
+
+let toggleInputRequired = ( checkbox, input ) => {
+    checkbox.addEventListener( 'change', e => {
+        if ( e.currentTarget.checked )
+			input.removeAttribute( 'required' );
+        else
+			input.setAttribute( 'required', 'required' );
+    } );
+
+    checkbox.onchange();
+}
+
+toggleInputRequired(checkBox_all_states, select_state_list); {% endcomment %}
+
+
+
+</script> 
+		
+{% endblock extra_js %}

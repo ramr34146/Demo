@@ -1,0 +1,210 @@
+{% extends 'base_dashboard.html' %}
+{% load static %}
+{% block dashboard_head_title %}{% endblock dashboard_head_title %} 
+
+
+
+{% block content %}
+
+<div class="content d-flex flex-column flex-column-fluid" id="kt_content">
+    <!--begin::Toolbar-->
+    <div class="toolbar" id="kt_toolbar">
+        <!--begin::Container-->
+        <div id="kt_toolbar_container" class="container-fluid d-flex flex-stack">
+            <!--begin::Page title-->
+            <div data-kt-swapper="true" data-kt-swapper-mode="prepend" data-kt-swapper-parent="{default: '#kt_content_container', 'lg': '#kt_toolbar_container'}" class="page-title d-flex align-items-center flex-wrap me-3 mb-5 mb-lg-0">
+                <!--begin::Title-->
+                <h1 class="d-flex text-dark fw-bolder fs-3 align-items-center my-1">All Projects (Leads)</h1>
+                <!--end::Title-->
+            </div>
+            <!--end::Page title-->
+            <!--begin::Actions-->
+            <div class="d-flex align-items-center gap-2 gap-lg-3">
+                <!--begin::Primary button-->
+                <a href="{% url 'auth:leads_create' %}" class="btn btn-sm btn-primary" >Create New Project</a>
+                <!--end::Primary button-->
+            </div>
+            <!--end::Actions-->
+        </div>
+        <!--end::Container-->
+    </div>
+    <!--end::Toolbar-->
+    <!--begin::Post-->
+    <div class="post d-flex flex-column-fluid" id="kt_post">
+        <!--begin::Container-->
+        <div id="kt_content_container" class="container-xxl">
+            <!--begin::Products-->
+            <div class="card card-flush">
+                <!--begin::Card header-->
+                <div class="card-header align-items-center py-5 gap-2 gap-md-5">
+                    <!--begin::Card title-->
+                    <div class="card-title">
+                    </div>
+                </div>
+                <!--end::Card header-->
+                <!--begin::Card body-->
+                <div class="card-body pt-0">
+                    <!--begin::Table-->
+                    <table class="table align-middle table-row-dashed fs-6 gy-5">
+                        <!--begin::Table head-->
+                        <thead>
+                            <!--begin::Table row-->
+                            <tr class="text-start text-gray-400 fw-bolder fs-7 text-uppercase gs-0">
+                                <th class="min-w-20px">Sr.</th>
+                                <th class="text-start min-w-100px">Project Name</th>
+                                <th class="text-center min-w-100px">File Name</th>
+                                <th class="text-center min-w-70px">Total Leads</th>
+                                <th class="text-center min-w-70px">No. of Assigned Leads</th>
+                                <th class="text-center min-w-100px">Total Members</th>
+                                <th class="text-center min-w-100px">Created At</th>
+                                <th class="text-center min-w-100px">Details</th>
+                                <th class="text-center min-w-70px">Status</th>
+                            </tr>
+                            <!--end::Table row-->
+                        </thead>
+                        <!--end::Table head-->
+                        <!--begin::Table body-->
+                        <tbody class="fw-bold text-gray-600">
+                            <!--begin::Table row-->
+                            {% for project in projects %}
+                                <tr>
+                                    <td>
+                                        {{forloop.counter0|add:page_obj.start_index}}
+
+                                    </td>
+                                    <td class="text-center pe-0" >
+                                        <span class="fw-bolder text-white ms-3">{{project.project_name|truncatechars:20}}</span>
+                                    </td>
+
+                                    <td class="text-center pe-0" >
+                                        <span class="fw-bolder text-warning ms-3">{{project.csvfile_name|truncatechars:20}}</span>
+                                    </td>
+                                    <td class="text-center pe-0" >
+                                        <span class="fw-bolder text-warning ms-3">{{project.get_total_leads}}</span>
+                                    </td>
+                                    <td class="text-center pe-0" >
+                                        {% if project.status == 'ass' %}
+                                            <span class="fw-bolder text-warning ms-3">{{project.get_total_assigned_leads}}</span>
+                                        {% elif project.status == 'fld' %}
+                                            <span class="fw-bolder text-warning ms-3">0</span>
+                                        {% else %}
+                                            {% if project.is_distribution_block %}
+                                                <span class="fw-bolder text-warning ms-3">Skipped By User</span>
+                                            {% else %}
+                                                <span class="fw-bolder text-warning ms-3">Under Process</span>
+                                            {% endif %}
+                                        {% endif %}
+                                    </td>
+                                    <td class="text-center pe-0" >
+                                        <span class="fw-bolder text-success ms-3">{{project.get_total_assigned_members}}</span>
+                                    </td>
+                                    <td class="text-center pe-0">
+                                        <span class="fw-bolder text-dark">{{project.created|date:'Y-m-d H:i'}}</span>
+                                    </td>
+                                    {% if project.status == 'com' %}
+                                        {% if project.is_distribution_block %}
+                                            <td class="text-center pe-0">
+                                                <a href="{{project.get_detail_url}}" class="badge badge-light-primary">View</a>
+                                            </td>
+                                            <td class="text-center pe-0">
+                                                <span class="badge badge-circle badge-success"><i class="bi bi-check-lg text-white"></i></span>
+                                            </td>
+                                        {% else %}
+                                            <td class="text-center"> --- </td>
+                                            <td class="text-center pe-0 text-success">Assigning Leads...</td>
+                                        {% endif %}
+                                    {% elif project.status == 'can' %}
+                                        <td class="text-center"> --- </td>
+                                        <td class="text-center pe-0 text-success">Terminated</td>
+                                    {% elif project.status == 'fld' %}
+                                        <td class="text-center"> --- </td>
+                                        <td class="text-center pe-0 text-success">Failed to Process.</td>
+                                    {% elif project.status == 'ass' %}
+                                        <td class="text-center pe-0">
+                                            <a href="{{project.get_detail_url}}" class="badge badge-light-primary">View</a>
+                                        </td>
+                                        <td class="text-center pe-0">
+                                            <span class="badge badge-circle badge-success"><i class="bi bi-check-lg text-white"></i></span>
+                                        </td>
+                                    {% elif project.status != 'ass' %}
+                                        <td class="text-center"> 
+                                            <form action="{% url 'auth:cancel_leads' %}" method="post">
+                                                {% csrf_token %}
+                                                <input type="hidden" name="project_task_id" value="{{project.taskid}}">
+                                                <input type="submit" class="btn btn-primary btn-sm" value="Terminate">
+                                            </form>
+                                        </td>
+                                        <td class="text-center pe-0 text-success">{{project.return_file_status}}</td>
+                                    {% else %}
+                                        <td class="text-center"> --- </td>
+                                        <td class="text-center pe-0 text-success">Failed to Process.</td>
+                                    {% endif %}
+                                </tr>
+                                <!--end::Table row-->
+
+                            {% empty %}
+                                <tr>
+                                        <td>
+                                            No Projects (Leads) Found!
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                                                            
+                        
+                        </tbody>
+                        <!--end::Table body-->
+                    </table>
+                    <!--end::Table-->
+                    <br />
+                    {% if is_paginated %}
+                    <ul class="pagination my-5">
+                        {% if page_obj.has_previous %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page=1" tabindex="-1">First</a>
+                            </li>
+                            <li class="page-item previous">
+                                <a class="page-link" href="?page={{ page_obj.previous_page_number }}" tabindex="-1"><i class="previous"></i></a>
+                            </li>
+                        {% endif %}
+
+                        {% for num in page_obj.paginator.page_range %}
+                            {% if page_obj.number == num %}
+                            <li class="page-item active d-none d-sm-block" aria-current="page">
+                                <span class="page-link">
+                                {{ num }}
+                                <span class="visually-hidden">(current)</span>
+                                </span>
+                            </li>
+                    
+                            {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                            <li class="page-item d-none d-sm-block">
+                                <a href="?page={{ num }}" class="page-link">{{num}}</a>
+                            </li>
+                    
+                            {% endif %}
+                      {% endfor %}
+                  
+                      {% if page_obj.has_next %}
+                        <li class="page-item next">
+                          <a href="?page={{ page_obj.next_page_number }}" class="page-link" aria-label="Next">
+                            <i class="next"></i>
+                          </a>
+                        </li>
+
+                        <li class="page-item"> <a class="page-link" href="?page={{ page_obj.paginator.num_pages}}">Last</a></li>
+
+                      {% endif %}
+                    
+                    </ul>
+                    {% endif %}
+                </div>
+                <!--end::Card body-->
+            </div>
+            <!--end::Products-->
+        </div>
+        <!--end::Container-->
+    </div>
+    <!--end::Post-->
+</div>
+
+{% endblock content %}

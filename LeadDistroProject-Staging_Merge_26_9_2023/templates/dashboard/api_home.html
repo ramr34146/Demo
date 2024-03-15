@@ -1,0 +1,118 @@
+{% extends 'base_dashboard.html' %}
+{% load static %}
+{% block dashboard_head_title %}{% endblock dashboard_head_title %} 
+
+{% block content %}
+
+<div class="post d-flex flex-column-fluid" id="kt_post">
+	<!--begin::Container-->
+	<div id="kt_content_container" class="container-xxl">
+        <div class="card mb-5 mb-xl-10 " id="kt_profile_details_view">
+            <!--begin::Card header-->
+            <div class="card-header cursor-pointer">
+                <!--begin::Card title-->
+                <div class="card-title m-0">
+                    <h3 class="fw-bold m-0">API Overview </h3>
+                </div>
+                <!--end::Card title-->
+            </div>
+            <!--begin::Card header-->
+            <!--begin::Card body-->
+            <div class="card-body p-9">
+                <!--begin::Row-->
+                <div class="row mb-7">
+                    <label class="col-lg-4 fw-semibold text-white fs-4">API Key:</label>
+                    <div class="col-lg-8">
+                        <span class="fw-bold fs-6 text-gray-800 fs-4">{{profile.api_key}}</span>
+                    </div>
+                </div>
+                <!--end::Row-->
+            </div>
+            <!--end::Card body-->
+
+
+        </div>
+
+
+        <div class="card mb-5 mb-xl-10" id="kt_profile_details_view">
+            <div class="card ">
+                <div class="card-header card-header-stretch">
+                    <h3 class="card-title fs-4">Create Lead API</h3>
+                    <div class="card-toolbar">
+                        <ul class="nav nav-tabs nav-line-tabs nav-stretch fs-6 border-0">
+                            <li class="nav-item">
+                                <a class="nav-link active" data-bs-toggle="tab" href="#curl">CURL</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" data-bs-toggle="tab" href="#python">PYTHON</a>
+                            </li>                         
+                        </ul>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="tab-content" id="myTabContent">
+                        <div class="tab-pane fade show active fs-3" id="curl" role="tabpanel">
+<pre>
+curl --location --request POST 'https://leaddistro.textdrip.com/api/create_lead/' \
+--header 'Content-Type: application/json' \
+--header 'APIKey: {{profile.api_key}}' \
+--data-raw '{
+    "name" : "Lead Name",
+    "phone" : "1234567890",
+    "email" : "",
+    "birthdate" : "",
+    "address" : "",
+    "state" : "",
+    "zipcode" : "",
+    "custom_field1" : "",
+    "custom_field2" : "",
+    "custom_field3" : "",
+    "custom_field4" : "",
+    "custom_field5" : "",
+    "optional" : "usha"
+}'
+</pre>
+                        </div>
+            
+                        <div class="tab-pane fade fs-3" id="python" role="tabpanel">
+<pre>
+import requests
+import json
+url = "https://leaddistro.textdrip.com/api/create_lead/"
+payload = json.dumps({
+    "name": "Lead Name",
+    "phone": "1234567890",
+    "email": "",
+    "birthdate": "",
+    "address": "",
+    "state": "",
+    "zipcode": "",
+    "custom_field1": "",
+    "custom_field2": "",
+    "custom_field3": "",
+    "custom_field4": "",
+    "custom_field5": "",
+    "optional" : "usha"
+})
+headers = {
+    'Content-Type': 'application/json',
+    'APIKey': '{{profile.api_key}}'
+}
+response = requests.request("POST", url, headers=headers, data=payload)
+print(response.text)
+</pre>                           
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+</div>
+
+{% endblock content %}
+
+
+{% block extra_js %}
+{% endblock extra_js %}

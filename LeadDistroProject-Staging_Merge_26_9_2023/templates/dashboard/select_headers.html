@@ -1,0 +1,428 @@
+{% extends 'base_dashboard.html' %}
+{% load static %}
+{% load custom_site_tags %}
+
+{% block dashboard_head_title %}{% endblock dashboard_head_title %} 
+
+{% block extra_css_start %}
+<link href="{% static 'plugins/custom/datatables/datatables.bundle.css'%}" rel="stylesheet" type="text/css" />
+{% endblock extra_css_start %}
+
+{% block extra_css %}
+{% endblock extra_css %}
+
+{% block content %}
+
+<!-- This CSS for Alert message on Lead Limit is less than Total Rows -->
+<style>
+    .swal2-popup{
+        background-color: #1e1e2d !important;
+    }
+    .swal2-icon.swal2-warning {
+    border-color: #bf1d2e;
+    color: #bf1d2e;
+}
+</style>
+
+<div class="content d-flex flex-column flex-column-fluid" id="kt_content">
+	<!--begin::Toolbar-->
+	<div class="toolbar" id="kt_toolbar">
+		<!--begin::Container-->
+		<div id="kt_toolbar_container" class="container-fluid d-flex flex-stack">
+			<!--begin::Page title-->
+			<div data-kt-swapper="true" data-kt-swapper-mode="prepend" data-kt-swapper-parent="{default: '#kt_content_container', 'lg': '#kt_toolbar_container'}" class="page-title d-flex align-items-center flex-wrap me-3 mb-5 mb-lg-0">
+				<!--begin::Title-->
+				<h1 class="d-flex text-dark fw-bolder fs-3 align-items-center my-1">Select Relevant Columns to Process</h1>
+				<!--end::Title-->
+			</div>
+			<!--end::Page title-->
+			<!--begin::Actions-->
+			<div class="d-flex align-items-center gap-2 gap-lg-3">
+				<!--begin::Primary button-->
+				<a href="{% url 'auth:leads_create' %}" class="btn btn-sm btn-primary" >Reupload New File</a>
+
+				<!--end::Primary button-->
+			</div>
+			<!--end::Actions-->
+		</div>
+		<!--end::Container-->
+	</div>
+	<!--end::Toolbar-->
+    <div class="col-8 offset-2">
+        <div class="alert alert-dismissible bg-light-success d-flex flex-column flex-sm-row w-100 p-3 mb-5">
+            <span class="svg-icon svg-icon-2hx svg-icon-success me-4 mb-5 mb-sm-0">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                    <path opacity="0.3" d="M12 22C13.6569 22 15 20.6569 15 19C15 17.3431 13.6569 16 12 16C10.3431 16 9 17.3431 9 19C9 20.6569 10.3431 22 12 22Z" fill="currentColor"></path>
+                    <path d="M19 15V18C19 18.6 18.6 19 18 19H6C5.4 19 5 18.6 5 18V15C6.1 15 7 14.1 7 13V10C7 7.6 8.7 5.6 11 5.1V3C11 2.4 11.4 2 12 2C12.6 2 13 2.4 13 3V5.1C15.3 5.6 17 7.6 17 10V13C17 14.1 17.9 15 19 15ZM11 10C11 9.4 11.4 9 12 9C12.6 9 13 8.6 13 8C13 7.4 12.6 7 12 7C10.3 7 9 8.3 9 10C9 10.6 9.4 11 10 11C10.6 11 11 10.6 11 10Z" fill="currentColor"></path>
+                </svg>
+            </span>
+            <div class="d-flex flex-column pe-0 pe-sm-10">
+                <h2>File Name: {{csvfile.csvfile_name}}</h2>
+                <span> Total Records: <span class="badge badge-warning text-black fs-5 py-1">{{totalrows}}</span> Uploaded at: {{csvfile.created}}</span>
+            </div>
+        </div>
+    </div>
+
+        {% if LLR_keyInvalid %}
+
+        <div class="col-8 offset-2">
+        <div class="alert alert-dismissible bg-light-danger d-flex flex-column flex-sm-row w-100 p-3 mb-5">
+            <span class="svg-icon svg-icon-2hx svg-icon-danger me-4 mb-5 mb-sm-0">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                    <path opacity="0.3" d="M12 22C13.6569 22 15 20.6569 15 19C15 17.3431 13.6569 16 12 16C10.3431 16 9 17.3431 9 19C9 20.6569 10.3431 22 12 22Z" fill="currentColor"></path>
+                    <path d="M19 15V18C19 18.6 18.6 19 18 19H6C5.4 19 5 18.6 5 18V15C6.1 15 7 14.1 7 13V10C7 7.6 8.7 5.6 11 5.1V3C11 2.4 11.4 2 12 2C12.6 2 13 2.4 13 3V5.1C15.3 5.6 17 7.6 17 10V13C17 14.1 17.9 15 19 15ZM11 10C11 9.4 11.4 9 12 9C12.6 9 13 8.6 13 8C13 7.4 12.6 7 12 7C10.3 7 9 8.3 9 10C9 10.6 9.4 11 10 11C10.6 11 11 10.6 11 10Z" fill="currentColor"></path>
+                </svg>
+            </span>
+            <div class="d-flex flex-column pe-0 pe-sm-10">
+                <h3>Your Landline Remover key is invalid, Please Update!</h3>
+                <a href="https://leaddistro.textdrip.com/edit-profile/">Update here (if you want to check number's LineType &amp; DNCType From LandlineRemover.com) </a>
+            </div>
+        </div>
+    </div>
+
+    {% endif %}
+
+
+    {% if less_credit %}
+
+        <div class="col-8 offset-2">
+        <div class="alert alert-dismissible bg-light-danger d-flex flex-column flex-sm-row w-100 p-3 mb-5">
+            <span class="svg-icon svg-icon-2hx svg-icon-danger me-4 mb-5 mb-sm-0">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                    <path opacity="0.3" d="M12 22C13.6569 22 15 20.6569 15 19C15 17.3431 13.6569 16 12 16C10.3431 16 9 17.3431 9 19C9 20.6569 10.3431 22 12 22Z" fill="currentColor"></path>
+                    <path d="M19 15V18C19 18.6 18.6 19 18 19H6C5.4 19 5 18.6 5 18V15C6.1 15 7 14.1 7 13V10C7 7.6 8.7 5.6 11 5.1V3C11 2.4 11.4 2 12 2C12.6 2 13 2.4 13 3V5.1C15.3 5.6 17 7.6 17 10V13C17 14.1 17.9 15 19 15ZM11 10C11 9.4 11.4 9 12 9C12.6 9 13 8.6 13 8C13 7.4 12.6 7 12 7C10.3 7 9 8.3 9 10C9 10.6 9.4 11 10 11C10.6 11 11 10.6 11 10Z" fill="currentColor"></path>
+                </svg>
+            </span>
+            <div class="d-flex flex-column pe-0 pe-sm-10">
+                <h3>Your LandlineRemover Credit Less Than Total Rows</h3>
+                <span>Add Credit<a href="https://landlineremover.com/auth/payment-method/"> Auto-TopUp  </a> </span>
+            </div>
+        </div>
+    </div>
+
+    {% endif %}
+
+
+	<!--begin::Post-->
+	<div class="post d-flex flex-column-fluid" id="kt_post">
+		<!--begin::Container-->
+		<div id="kt_content_container" class="container-xxl">
+			<!--begin::Form-->
+			<form  id="kt_ecommerce_add_product_form" class="form d-flex flex-column flex-lg-row fv-plugins-bootstrap5 fv-plugins-framework" method="POST" action="{% url 'auth:select_headers' %}" >
+				{% csrf_token %}       
+                <input type="hidden" name="header_uuid" value="{{csvfile.uid}}">
+
+				<!--begin::Main column-->
+				<div class="d-flex flex-column flex-row-fluid gap-7 gap-lg-10">
+					<!--begin::Tab content-->
+					<div class="tab-content">
+						<!--begin::Tab pane-->
+						<div class="tab-pane fade show active" id="kt_ecommerce_add_product_general" role="tab-panel">
+							<div class="d-flex flex-column gap-7 gap-lg-10">
+								<!--begin::General options-->
+                                <div class="card card-flush py-4">
+                                    <!--begin::Card header-->
+                                    <div class="card-header">
+                                        <div class="card-title">
+                                            <h2>Required Data</h2> 
+                                        </div>
+                                    </div>
+                                    <!--end::Card header-->
+                                    <!--begin::Card body-->
+                                    <div class="card-body pt-0" >
+                                        <div class="d-flex flex-wrap gap-5">
+                                            <!--begin::Input group-->
+                                            <div class="fv-row w-100 flex-md-root fv-plugins-icon-container">
+                                                <label class="required form-label">First name/Full </label>
+                                                <select class="form-select mb-2 " name="header_firstname" required="required" data-control="select2" data-hide-search="true" data-placeholder="Select an option"  tabindex="-1" aria-hidden="true">
+                                                    <option></option>
+                                                    {% for op in headers %}
+                                                        {% if op|auto_select_header:'first,firstname,fullname,full,name' %}
+                                                            <option value="{{op}}" selected >{{op}}</option>
+                                                        {% else %}
+                                                            <option value="{{op}}" >{{op}}</option>
+                                                        {% endif %}
+                                                    {% endfor %}
+                                                </select>
+                                            </div>
+                                            <!--end::Input group-->
+                                            <!--begin::Input group-->
+                                            <div class="fv-row w-100 flex-md-root fv-plugins-icon-container">
+                                                <label class="form-label">Last Name (leave it empty if your choose Full Name)</label>
+                                                <select class="form-select mb-2 " name="header_lastname"  data-control="select2" data-hide-search="true" data-placeholder="Select an option"  tabindex="-1" aria-hidden="true">
+                                                    <option></option>
+                                                    {% for op in headers %}
+                                                        {% if op|auto_select_header:'last,second' %}
+                                                            <option value="{{op}}" selected >{{op}}</option>
+                                                        {% else %}
+                                                            <option value="{{op}}" >{{op}}</option>
+                                                        {% endif %}
+                                                    {% endfor %}
+                                                </select>
+                                            </div>
+                                            <!--end::Input group-->
+                                            <!--begin::Input group-->
+                                             <div class="fv-row w-100 flex-md-root fv-plugins-icon-container">
+                                                <label class="required form-label">Phone Number</label>
+                                                <select class="form-select mb-2 " name="header_phonenumber" required="required" data-control="select2" data-hide-search="true" data-placeholder="Select an option"  tabindex="-1" aria-hidden="true">
+                                                    <option></option>
+                                                    {% for op in headers %}
+                                                        {% if op|auto_select_header:'phone,number,mobile' %}
+                                                            <option value="{{op}}" selected >{{op}}</option>
+                                                        {% else %}
+                                                            <option value="{{op}}" >{{op}}</option>
+                                                        {% endif %}
+                                                    {% endfor %}
+                                                </select>
+                                            </div>
+                                            <!--end::Input group-->
+                                            <div class="w-100 "></div>
+                                            <div class="card-title">
+                                                <h3>Optional Data</h3> 
+                                            </div>
+                                            <div class="w-100 "></div>
+                                           <!--begin::Input group-->
+                                           <div class="fv-row w-100 flex-md-root fv-plugins-icon-container">
+                                            <label class="form-label">Email</label>
+                                            <select class="form-select mb-2 " name="header_email" data-control="select2" data-hide-search="true" data-placeholder="Select an option"  tabindex="-1" aria-hidden="true">
+                                                <option></option>
+                                                {% for op in headers %}
+                                                    {% if op|auto_select_header:'email,mail' %}
+                                                        <option value="{{op}}" selected >{{op}}</option>
+                                                    {% else %}
+                                                        <option value="{{op}}" >{{op}}</option>
+                                                    {% endif %}
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                        <!--end::Input group-->
+
+                                        <!--begin::Input group-->
+                                        <div class="fv-row w-100 flex-md-root fv-plugins-icon-container">
+                                            <label class=" form-label">DOB</label>
+                                            <select class="form-select mb-2 " name="header_birthdate" data-control="select2" data-hide-search="true" data-placeholder="Select an option"  tabindex="-1" aria-hidden="true">
+                                                <option></option>
+                                                {% for op in headers %}
+                                                    {% if op|auto_select_header:'dob,birth,date' %}
+                                                        <option value="{{op}}" selected >{{op}}</option>
+                                                    {% else %}
+                                                        <option value="{{op}}" >{{op}}</option>
+                                                    {% endif %}
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                        <!--end::Input group-->
+
+                                        <!--begin::Input group-->
+                                        <div class="fv-row w-100 flex-md-root fv-plugins-icon-container">
+                                            <label class=" form-label">Address</label>
+                                            <select class="form-select mb-2 " name="header_address" data-control="select2" data-hide-search="true" data-placeholder="Select an option"  tabindex="-1" aria-hidden="true">
+                                                <option></option>
+                                                {% for op in headers %}
+                                                    {% if op|auto_select_header:'address' %}
+                                                        <option value="{{op}}" selected >{{op}}</option>
+                                                    {% else %}
+                                                        <option value="{{op}}" >{{op}}</option>
+                                                    {% endif %}
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                        <!--end::Input group-->
+                                        <!--begin::Input group-->
+                                        <div class="fv-row w-100 flex-md-root fv-plugins-icon-container">
+                                            <label class=" form-label">State</label>
+                                            <select class="form-select mb-2 " name="header_state" data-control="select2" data-hide-search="true" data-placeholder="Select an option"  tabindex="-1" aria-hidden="true">
+                                                <option></option>
+                                                {% for op in headers %}
+                                                    {% if op|auto_select_header:'state,region,county' %}
+                                                        <option value="{{op}}" selected >{{op}}</option>
+                                                    {% else %}
+                                                        <option value="{{op}}" >{{op}}</option>
+                                                    {% endif %}
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                        <!--end::Input group-->
+
+                                        <!--begin::Input group-->
+                                        <div class="fv-row w-100 flex-md-root fv-plugins-icon-container">
+                                            <label class=" form-label">Zipcode/Postcode</label>
+                                            <select class="form-select mb-2 " name="header_zipcode" data-control="select2" data-hide-search="true" data-placeholder="Select an option"  tabindex="-1" aria-hidden="true">
+                                                <option></option>
+                                                {% for op in headers %}
+                                                    {% if op|auto_select_header:'zip,post,zipcode,postcode' %}
+                                                        <option value="{{op}}" selected >{{op}}</option>
+                                                    {% else %}
+                                                        <option value="{{op}}" >{{op}}</option>
+                                                    {% endif %}
+                                                {% endfor %}
+                                            </select>
+                                        </div>                                                
+                                        <!--end::Input group-->
+
+                                        <div class="w-100"></div>
+                                        <!--begin::Input group-->
+                                        <div class="fv-row w-100 flex-md-root fv-plugins-icon-container">
+                                            <label class=" form-label">Custom Field 1</label>
+                                            <select class="form-select mb-2 " name="header_custom_field1" data-control="select2" data-hide-search="true" data-placeholder="Select an option"  tabindex="-1" aria-hidden="true">
+                                                <option></option>
+                                                {% for op in headers %}
+                                                    {% if op|auto_select_header:'custom1,custom_1' %}
+                                                        <option value="{{op}}" selected >{{op}}</option>
+                                                    {% else %}
+                                                        <option value="{{op}}" >{{op}}</option>
+                                                    {% endif %}
+                                                {% endfor %}
+                                                {% comment %} 
+                                                {% for op in headers %}
+                                                    <option value="{{op}}">{{op}}</option>
+                                                {% endfor %} {% endcomment %}
+                                            </select>
+                                        </div>
+                                        <!--end::Input group-->
+
+                                        <!--begin::Input group-->
+                                        <div class="fv-row w-100 flex-md-root fv-plugins-icon-container">
+                                            <label class=" form-label">Custom Field 2</label>
+                                            <select class="form-select mb-2 " name="header_custom_field2" data-control="select2" data-hide-search="true" data-placeholder="Select an option"  tabindex="-1" aria-hidden="true">
+                                                <option></option>
+                                                {% for op in headers %}
+                                                    {% if op|auto_select_header:'custom2,custom_2' %}
+                                                        <option value="{{op}}" selected >{{op}}</option>
+                                                    {% else %}
+                                                        <option value="{{op}}" >{{op}}</option>
+                                                    {% endif %}
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                        <!--end::Input group-->
+                                        <!--begin::Input group-->
+                                        <div class="fv-row w-100 flex-md-root fv-plugins-icon-container">
+                                            <label class=" form-label">Custom Field 3</label>
+                                            <select class="form-select mb-2 " name="header_custom_field3" data-control="select2" data-hide-search="true" data-placeholder="Select an option"  tabindex="-1" aria-hidden="true">
+                                                <option></option>
+                                                {% for op in headers %}
+                                                    {% if op|auto_select_header:'custom3,custom_3' %}
+                                                        <option value="{{op}}" selected >{{op}}</option>
+                                                    {% else %}
+                                                        <option value="{{op}}" >{{op}}</option>
+                                                    {% endif %}
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                        <!--end::Input group-->
+
+                                        <!--begin::Input group-->
+                                        <div class="fv-row w-100 flex-md-root fv-plugins-icon-container">
+                                            <label class=" form-label">Custom Field 4</label>
+                                            <select class="form-select mb-2 " name="header_custom_field4" data-control="select2" data-hide-search="true" data-placeholder="Select an option"  tabindex="-1" aria-hidden="true">
+                                                <option></option>
+                                                {% for op in headers %}
+                                                    {% if op|auto_select_header:'custom4,custom_4' %}
+                                                        <option value="{{op}}" selected >{{op}}</option>
+                                                    {% else %}
+                                                        <option value="{{op}}" >{{op}}</option>
+                                                    {% endif %}
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                        <!--end::Input group-->
+
+                                        <!--begin::Input group-->
+                                        <div class="fv-row w-50 flex-md-root fv-plugins-icon-container">
+                                            <label class=" form-label">Custom Field 5</label>
+                                            <select class="form-select mb-2 " name="header_custom_field5" data-control="select2" data-hide-search="true" data-placeholder="Select an option"  tabindex="-1" aria-hidden="true">
+                                                <option></option>
+                                                {% for op in headers %}
+                                                    {% if op|auto_select_header:'custom5,custom_5' %}
+                                                        <option value="{{op}}" selected >{{op}}</option>
+                                                    {% else %}
+                                                        <option value="{{op}}" >{{op}}</option>
+                                                    {% endif %}
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                        <!--end::Input group-->
+
+
+
+                                        </div>
+                                        <!--end:Tax-->
+                                    </div>
+                                    <!--end::Card body-->
+                                </div>
+								<!--end::General options-->
+
+                                
+							</div>
+						</div>
+						<!--end::Tab pane-->
+					
+					</div>
+					<!--end::Tab content-->
+					<div class="d-flex justify-content-center">
+						<!--end::Button-->
+						<!--begin::Button-->
+						<button type="submit" id="submit_btn_process" class="btn btn-primary my-5 text-center"> 
+							<span class="indicator-label">Finish the Process</span> 
+							<span class="indicator-progress">Please wait... It can take upto 2 minutes.
+							<span class="spinner-border spinner-border-sm align-middle ms-2"></span></span>
+						</button>
+						<!--end::Button-->
+					</div>
+				</div>
+				<!--end::Main column-->
+				<div></div>
+			</form>
+			<!--end::Form-->
+		</div>
+		<!--end::Container-->
+	</div>
+	<!--end::Post-->
+</div>
+
+{% endblock content %}
+
+
+{% block extra_js %}
+<script type="text/javascript">
+    submitButton = document.querySelector('#submit_btn_process');
+    submitButton.addEventListener('click', function () {
+        allow_ind = 'true'
+        $('input:required').each(function() {
+            if ($(this).val() === '')
+                allow_ind = 'false'
+            });
+        
+        if (allow_ind==="true"){
+            submitButton.setAttribute('data-kt-indicator', 'on');
+        }
+    });
+    
+</script>
+
+
+
+<script type="text/javascript">
+    if ( window.history.replaceState ) {
+      window.history.replaceState( null, null, window.location.href );
+    }
+</script>
+
+<!-- This script for Show sweet alert on Upload CSV file -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
+<script>
+    {% if total_assign_leads_limit %}
+    Swal.fire({
+        icon: 'warning',
+        title: 'Warning',
+        text: "Your lead limit is low!! Kindly update your team members lead limit.",
+        confirmButtonText: 'OK',
+    })
+    {% endif %}
+</script>
+
+{% endblock extra_js %}
+
+
+
